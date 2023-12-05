@@ -1,0 +1,24 @@
+{
+  "name": "@tictac/server",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "server": "tsx watch --tsconfig ./tsconfig.json index.ts",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "@colyseus/monitor": "^0.15.4",
+    "@colyseus/playground": "^0.15.7",
+    "@colyseus/schema": "^2.0.25",
+    "@colyseus/tools": "^0.15.24",
+    "@tictac/shared": "workspace:^",
+    "colyseus": "^0.15.13"
+  },
+  "devDependencies": {
+    "tsx": "^4.6.2"
+  }
+}

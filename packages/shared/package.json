@@ -1,0 +1,16 @@
+{
+  "name": "@tictac/shared",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "@colyseus/schema": "^2.0.25",
+    "colyseus": "^0.15.13"
+  }
+}
