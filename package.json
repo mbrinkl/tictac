@@ -2,22 +2,22 @@
   "name": "tictac",
   "private": true,
   "version": "0.0.0",
+  "type": "module",
   "scripts": {
-    "start": "concurrently -c magenta,cyan \"npm run dev\" \"npm run server\"",
-    "dev": "vite",
-    "build": "tsc && vite build",
+    "start": "concurrently -c magenta,cyan \"pnpm client dev\" \"pnpm srv start\"",
     "lint": "eslint . --ext ts,tsx --report-unused-disable-directives --max-warnings 0",
-    "preview": "vite preview",
-    "server": "tsx watch --tsconfig server/tsconfig.json server/index.ts"
+    "client": "pnpm -C packages/client",
+    "srv": "pnpm -C packages/server",
+    "shared": "pnpm -C packages/shared"
   },
   "devDependencies": {
     "@typescript-eslint/eslint-plugin": "^6.10.0",
     "@typescript-eslint/parser": "^6.10.0",
-    "@vitejs/plugin-react-swc": "^3.5.0",
     "concurrently": "^8.2.2",
     "eslint": "^8.53.0",
     "eslint-plugin-react-hooks": "^4.6.0",
     "eslint-plugin-react-refresh": "^0.4.4",
+    "prettier": "^3.1.0",
     "typescript": "^5.2.2"
   }
 }

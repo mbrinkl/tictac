@@ -1,15 +1,14 @@
-import clsx from "clsx";
-import { useUserStore } from "./store";
-import { GameState, Player } from "@tictac/shared/schema/GameState";
-import { isValidMove } from "@tictac/shared/moves";
-import "./App.css";
-import { useEffect, useState } from "react";
+import { useEffect, useState } from 'react';
+import clsx from 'clsx';
+import { useUserStore } from './store';
+import { GameState, Player, isValidMove } from '@tictac/shared';
+import './App.css';
 
 const App = () => {
   const { client, room, state, setRoom, setState } = useUserStore();
 
   const joinRoom = async () => {
-    const newRoom = await client.joinOrCreate<GameState>("battle");
+    const newRoom = await client.joinOrCreate<GameState>('battle');
 
     newRoom.onStateChange((state) => {
       setState(state);
@@ -30,21 +29,12 @@ const App = () => {
     setRoom(newRoom);
   };
 
-  if (!room || !state)
-    return <button onClick={joinRoom}>{room ? "Loading..." : "Join"}</button>;
+  if (!room || !state) return <button onClick={joinRoom}>{room ? 'Loading...' : 'Join'}</button>;
 
   return <App2 />;
 };
 
-const PlayerInfo = ({
-  player,
-  isClient,
-  isActive,
-}: {
-  player: Player;
-  isClient: boolean;
-  isActive: boolean;
-}) => {
+const PlayerInfo = ({ player, isClient, isActive }: { player: Player; isClient: boolean; isActive: boolean }) => {
   const [time, setTime] = useState(-1);
 
   useEffect(() => {
@@ -64,8 +54,7 @@ const PlayerInfo = ({
 
   return (
     <div>
-      P{player.id} {isClient && "(you)"} {player.isConnected ? "F" : "L"}{" "}
-      {getTimeDisplay(time)}
+      P{player.id} {isClient && '(you)'} {player.isConnected ? 'F' : 'L'} {getTimeDisplay(time)}
     </div>
   );
 };
@@ -75,7 +64,7 @@ const App2 = () => {
   const room = useUserStore((s) => s.room!);
 
   const onCellClick = (index: number) => {
-    room.send("cell_click", index);
+    room.send('cell_click', index);
   };
 
   const player = state.players.get(room.sessionId);
@@ -85,21 +74,15 @@ const App2 = () => {
   const p2 = players.length > 1 ? players[1] : undefined;
   const isActive = state.activePlayerId === player?.id;
 
+  if (!p2) {
+    return <div>Waiting for p2...</div>;
+  }
+
   return (
-    <div className={clsx("wrapper", isActive && "active")}>
+    <div className={clsx('wrapper', isActive && 'active')}>
       <div className="player-info">
-        <PlayerInfo
-          player={p1}
-          isClient={player?.id === p1.id}
-          isActive={state.activePlayerId === p1.id}
-        />
-        {p2 && (
-          <PlayerInfo
-            player={p2}
-            isClient={player?.id === p2.id}
-            isActive={state.activePlayerId === p2.id}
-          />
-        )}
+        <PlayerInfo player={p1} isClient={player?.id === p1.id} isActive={state.activePlayerId === p1.id} />
+        {p2 && <PlayerInfo player={p2} isClient={player?.id === p2.id} isActive={state.activePlayerId === p2.id} />}
       </div>
       <div className="board">
         {state.board.map((v, index) => {
@@ -107,7 +90,7 @@ const App2 = () => {
           return (
             <div
               key={index}
-              className={clsx("cell", isValid && isActive && "valid")}
+              className={clsx('cell', isValid && isActive && 'valid')}
               onClick={() => onCellClick(index)}
             >
               {v}

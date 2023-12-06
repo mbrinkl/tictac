@@ -1,6 +1,6 @@
-import { Client, Room } from "colyseus.js";
-import { create } from "zustand";
-import { GameState } from "@tictac/shared/schema/GameState";
+import { Client, Room } from 'colyseus.js';
+import { create } from 'zustand';
+import { GameState } from '../../shared/src/schema/GameState';
 
 interface IUserStore {
   client: Client;
@@ -11,7 +11,7 @@ interface IUserStore {
 }
 
 export const useUserStore = create<IUserStore>()((set) => ({
-  client: new Client("ws://localhost:2567"),
+  client: new Client('ws://localhost:2567'),
   room: null,
   state: null,
   setRoom: (room) => set({ room }),
