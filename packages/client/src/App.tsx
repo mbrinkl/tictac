@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import clsx from 'clsx';
 import { useUserStore } from './store';
-import { GameState, Player, isValidMove } from '@tictac/shared';
+import { GameState, Player, isValidMove } from '@shared';
 import './App.css';
 
 const App = () => {

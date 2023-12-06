@@ -1,6 +1,6 @@
 import { Client, Room } from 'colyseus.js';
 import { create } from 'zustand';
-import { GameState } from '../../shared/src/schema/GameState';
+import { GameState } from '@shared';
 
 interface IUserStore {
   client: Client;

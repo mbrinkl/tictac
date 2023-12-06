@@ -1,17 +1,22 @@
 {
   "compilerOptions": {
-    "outDir": "build",
     "target": "ESNext",
+    "moduleResolution": "Node",
     "module": "CommonJS",
-    "moduleResolution": "node",
-    "strict": true,
-    "allowJs": true,
-    "strictNullChecks": false,
     "esModuleInterop": true,
-    "experimentalDecorators": true,
-    "skipLibCheck": true,
+    "strict": true,
+    "noUncheckedIndexedAccess": true,
+    // "noImplicitOverride": true,
     "forceConsistentCasingInFileNames": true,
-    "useDefineForClassFields": false
+    "useDefineForClassFields": false,
+    "strictNullChecks": false,
+    "allowJs": true,
+    "skipLibCheck": true,
+
+    "experimentalDecorators": true,
+    "paths": {
+      "@shared": ["../shared"]
+    }
   },
-  "include": ["."]
+  "include": [".", "../shared"]
 }

@@ -1,5 +1,5 @@
 import { Client, Room } from 'colyseus';
-import { Player, GameState, isValidMove } from '@tictac/shared';
+import { Player, GameState, isValidMove } from '../../shared';
 
 const NUM_PLAYERS = 2;
 
