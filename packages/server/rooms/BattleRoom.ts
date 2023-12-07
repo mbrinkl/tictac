@@ -1,30 +1,9 @@
 import { Client, Room } from 'colyseus';
-import { IPlayer, IGameState, isValidMove } from '../../shared';
-import { Schema, MapSchema, ArraySchema, type } from '@colyseus/schema';
+import { isValidMove } from '../../shared/moves';
+import { GameState } from '../schema/GameState';
+import { Player } from '../schema/Player';
 
 const NUM_PLAYERS = 2;
-
-export class Player extends Schema implements IPlayer {
-  @type('number') id;
-  @type('string') mark;
-  @type('boolean') isConnected;
-  @type('number') timeRemainingMs;
-
-  constructor(id: number) {
-    super();
-    this.id = id;
-    this.mark = id === 0 ? 'X' : 'O';
-    this.isConnected = true;
-    this.timeRemainingMs = 10 * 1000;
-  }
-}
-
-export class GameState extends Schema implements IGameState {
-  @type({ map: Player }) players = new MapSchema<Player>();
-  @type({ array: 'string' }) board = new ArraySchema<string>(...Array(9).fill(''));
-  @type('number') activePlayerId = 0;
-  @type('number') lastElapsed = 0;
-}
 
 export class BattleRoom extends Room<GameState> {
   started: boolean;
