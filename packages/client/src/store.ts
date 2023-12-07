@@ -1,13 +1,13 @@
 import { Client, Room } from 'colyseus.js';
 import { create } from 'zustand';
-import { GameState } from '@shared';
+import { IGameState } from '@shared';
 
 interface IUserStore {
   client: Client;
-  room: Room<GameState> | null;
-  state: GameState | null;
-  setRoom: (room: Room<GameState>) => void;
-  setState: (state: GameState) => void;
+  room: Room<IGameState> | null;
+  state: IGameState | null;
+  setRoom: (room: Room<IGameState>) => void;
+  setState: (state: IGameState) => void;
 }
 
 export const useUserStore = create<IUserStore>()((set) => ({

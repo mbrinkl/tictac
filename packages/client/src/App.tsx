@@ -1,14 +1,14 @@
 import { useEffect, useState } from 'react';
 import clsx from 'clsx';
 import { useUserStore } from './store';
-import { GameState, Player, isValidMove } from '@shared';
+import { IGameState, IPlayer, isValidMove } from '@shared';
 import './App.css';
 
 const App = () => {
   const { client, room, state, setRoom, setState } = useUserStore();
 
   const joinRoom = async () => {
-    const newRoom = await client.joinOrCreate<GameState>('battle');
+    const newRoom = await client.joinOrCreate<IGameState>('battle');
 
     newRoom.onStateChange((state) => {
       setState(state);
@@ -34,7 +34,7 @@ const App = () => {
   return <App2 />;
 };
 
-const PlayerInfo = ({ player, isClient, isActive }: { player: Player; isClient: boolean; isActive: boolean }) => {
+const PlayerInfo = ({ player, isClient, isActive }: { player: IPlayer; isClient: boolean; isActive: boolean }) => {
   const [time, setTime] = useState(-1);
 
   useEffect(() => {

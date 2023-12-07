@@ -7,10 +7,6 @@ settings:
 importers:
 
   .:
-    dependencies:
-      '@colyseus/schema':
-        specifier: ^2.0.25
-        version: 2.0.25
     devDependencies:
       '@typescript-eslint/eslint-plugin':
         specifier: ^6.10.0
