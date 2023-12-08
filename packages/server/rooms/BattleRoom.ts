@@ -1,11 +1,13 @@
+import { Dispatcher } from '@colyseus/command';
 import { Client, Room } from 'colyseus';
-import { isValidMove } from '../../shared/moves';
 import { GameState } from '../schema/GameState';
 import { Player } from '../schema/Player';
+import { ClickCellCommand } from '../commands/ClickCellCommand';
 
 const NUM_PLAYERS = 2;
 
 export class BattleRoom extends Room<GameState> {
+	dispatcher = new Dispatcher(this);
 	started: boolean;
 
 	onCreate() {
@@ -13,18 +15,10 @@ export class BattleRoom extends Room<GameState> {
 		this.setState(new GameState());
 
 		this.onMessage('cell_click', (client, index: number) => {
-			if (!this.started || !isValidMove(index, this.state.board)) {
-				return;
-			}
-
-			const player = this.state.players.get(client.sessionId);
-			if (player.id === this.state.activePlayerId) {
-				this.state.board[index] = player.mark;
-				this.state.activePlayerId = (this.state.activePlayerId + 1) % NUM_PLAYERS;
-				const { elapsedTime } = this.clock;
-				player.timeRemainingMs -= elapsedTime - this.state.lastElapsed;
-				this.state.lastElapsed = elapsedTime;
-			}
+			this.dispatcher.dispatch(new ClickCellCommand(), {
+				sessionId: client.sessionId,
+				index,
+			});
 		});
 	}
 
