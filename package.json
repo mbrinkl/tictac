@@ -11,6 +11,7 @@
     "shared": "pnpm -C packages/shared"
   },
   "devDependencies": {
+    "@types/node": "^20.10.4",
     "@typescript-eslint/eslint-plugin": "^6.10.0",
     "@typescript-eslint/parser": "^6.10.0",
     "concurrently": "^8.2.2",
