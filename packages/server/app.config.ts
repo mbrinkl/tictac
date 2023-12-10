@@ -4,6 +4,7 @@ import { playground } from '@colyseus/playground';
 import { BattleRoom } from './rooms/BattleRoom';
 import { LobbyRoom } from 'colyseus';
 import express from 'express';
+import path from 'path';
 
 export default config({
 	initializeGameServer: (gameServer) => {
@@ -15,7 +16,7 @@ export default config({
 		if (process.env.NODE_ENV !== 'production') {
 			app.use('/', playground);
 		} else {
-			app.use(express.static('../client/build'));
+			app.use(express.static(path.join(__dirname, '../client/build')));
 		}
 
 		/**
