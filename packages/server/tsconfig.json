@@ -1,22 +1,24 @@
 {
-  "compilerOptions": {
-    "target": "ESNext",
-    "moduleResolution": "Node",
-    "module": "CommonJS",
-    "esModuleInterop": true,
-    "strict": true,
-    "noUncheckedIndexedAccess": true,
-    // "noImplicitOverride": true,
-    "forceConsistentCasingInFileNames": true,
-    "useDefineForClassFields": false,
-    "strictNullChecks": false,
-    "allowJs": true,
-    "skipLibCheck": true,
+	"compilerOptions": {
+		"target": "ESNext",
+		"moduleResolution": "Node",
+		"module": "CommonJS",
+		"esModuleInterop": true,
+		"strict": true,
+		"noUncheckedIndexedAccess": true,
+		// "noImplicitOverride": true,
+		"forceConsistentCasingInFileNames": true,
+		"useDefineForClassFields": false,
+		"strictNullChecks": false,
+		"allowJs": true,
+		"skipLibCheck": true,
 
-    "experimentalDecorators": true,
-    "paths": {
-      "@shared": ["../shared"]
-    }
-  },
-  "include": [".", "../shared"]
+		"outDir": "./build",
+
+		"experimentalDecorators": true,
+		"paths": {
+			"@shared": ["../shared"]
+		}
+	},
+	"include": [".", "../shared"]
 }
