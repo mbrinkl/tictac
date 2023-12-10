@@ -3,6 +3,7 @@
 	export let isClient: boolean;
 	export let isActive: boolean;
 
+	import clsx from 'clsx';
 	import type { IPlayer } from '../../../../../shared';
 
 	let start = 0;
@@ -27,6 +28,6 @@
 <div>
 	P{player.id}
 	{isClient && '(you)'}
-	{player.isConnected ? 'F' : 'L'}
+	<span class={clsx('badge badge-icon', player.isConnected ? 'variant-filled-success' : 'variant-filled-error')} />
 	{display}
 </div>
