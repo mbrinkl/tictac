@@ -4,7 +4,7 @@
 	import clsx from 'clsx';
 	import type { Room } from 'colyseus.js';
 	import { ProgressRadial, clipboard } from '@skeletonlabs/skeleton';
-	import { isValidMove, type IGameState } from '../../../../../shared';
+	import { isValidMove, type IGameState, GameStatus } from '../../../../../shared';
 	import PlayerInfo from './PlayerInfo.svelte';
 	import { getClient } from '$lib/util';
 	import { onDestroy } from 'svelte';
@@ -74,6 +74,15 @@
 	{@const player = state.players.get(gameRoom.sessionId)}
 	{@const [p1, p2] = Array.from(state.players.values())}
 	{@const isActive = state.activePlayerId === player?.id}
+
+	{#if state.status === GameStatus.Draw}
+		<div>Draw</div>
+	{:else if state.status === GameStatus.WinP0}
+		<div>P0 wins</div>
+	{:else if state.status === GameStatus.WinP1}
+		<div>P1 wins</div>
+	{/if}
+
 	<div class={clsx('wrapper', isActive && 'active')}>
 		<div class="player-info">
 			<PlayerInfo player={p1} isClient={player?.id === p1.id} isActive={state.activePlayerId === p1.id} />

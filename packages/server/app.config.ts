@@ -24,8 +24,7 @@ export default config({
 			app.use('/', playground);
 		} else {
 			app.use(express.static(path.join(__dirname, '../../../client/build')));
-			app.get('*', function (request, response) {
-				console.log('in it', path.resolve(__dirname, '../../../client/build/index.html'));
+			app.get('*', (_, response) => {
 				response.sendFile(path.resolve(__dirname, '../../../client/build/index.html'));
 			});
 		}

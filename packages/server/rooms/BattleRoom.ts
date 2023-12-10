@@ -4,6 +4,7 @@ import { GameState } from '../schema/GameState';
 import { Player } from '../schema/Player';
 import { ClickCellCommand } from '../commands/ClickCellCommand';
 import { NUM_PLAYERS } from '../../shared/config';
+import { GameStatus } from '../../shared/models';
 
 interface IBattleRoomOptions {
 	isPrivate?: boolean;
@@ -11,13 +12,11 @@ interface IBattleRoomOptions {
 
 export class BattleRoom extends Room<GameState> {
 	dispatcher = new Dispatcher(this);
-	started: boolean;
 
 	onCreate(options: IBattleRoomOptions) {
 		if (options.isPrivate) {
 			this.setPrivate(true);
 		}
-		this.started = false;
 		this.setState(new GameState());
 
 		this.onMessage('cell_click', (client, index: number) => {
@@ -40,7 +39,7 @@ export class BattleRoom extends Room<GameState> {
 		this.state.players.set(client.sessionId, new Player(playerId));
 		if (this.state.players.size === NUM_PLAYERS) {
 			this.lock();
-			this.started = true;
+			this.state.status = GameStatus.InProgress;
 			this.clock.start();
 		}
 	}

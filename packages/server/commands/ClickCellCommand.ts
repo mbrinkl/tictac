@@ -2,6 +2,7 @@ import { Command } from '@colyseus/command';
 import { BattleRoom } from '../rooms/BattleRoom';
 import { isValidMove } from '../../shared/moves';
 import { NUM_PLAYERS } from '../../shared/config';
+import { GameStatus } from '../../shared/models';
 
 const winConditions = [
 	[0, 1, 2],
@@ -26,7 +27,7 @@ interface IClickCellCommandArgs {
 
 export class ClickCellCommand extends Command<BattleRoom, IClickCellCommandArgs> {
 	execute({ sessionId, index }: IClickCellCommandArgs) {
-		if (!this.room.started || !isValidMove(index, this.state.board)) {
+		if (this.state.status !== GameStatus.InProgress || !isValidMove(index, this.state.board)) {
 			return;
 		}
 
@@ -35,18 +36,22 @@ export class ClickCellCommand extends Command<BattleRoom, IClickCellCommandArgs>
 			return;
 		}
 
-		this.state.board[index] = player.mark;
-
-		if (isVictory(this.state.board, player.mark)) {
-			console.log('winner: ', player.id);
-		} else if (this.state.board.every((cell) => cell !== '')) {
-			console.log('draw');
-		}
-
-		// continue on...
-		this.state.activePlayerId = (this.state.activePlayerId + 1) % NUM_PLAYERS;
 		const { elapsedTime } = this.clock;
 		player.timeRemainingMs -= elapsedTime - this.state.lastElapsed;
 		this.state.lastElapsed = elapsedTime;
+
+		this.state.board[index] = player.mark;
+
+		if (isVictory(this.state.board, player.mark)) {
+			this.state.status = player.id === 0 ? GameStatus.WinP0 : GameStatus.WinP1;
+			this.clock.stop();
+			return;
+		} else if (this.state.board.every((cell) => cell !== '')) {
+			this.state.status = GameStatus.Draw;
+			this.clock.stop();
+			return;
+		}
+
+		this.state.activePlayerId = (this.state.activePlayerId + 1) % NUM_PLAYERS;
 	}
 }
