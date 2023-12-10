@@ -13,17 +13,21 @@ export default config({
 	},
 
 	initializeExpress: (app) => {
-		if (process.env.NODE_ENV !== 'production') {
-			app.use('/', playground);
-		} else {
-			app.use(express.static(path.join(__dirname, '../../../client/build')));
-		}
-
 		/**
 		 * Use @colyseus/monitor
 		 * It is recommended to protect this route with a password
 		 * Read more: https://docs.colyseus.io/tools/monitor/#restrict-access-to-the-panel-using-a-password
 		 */
-		app.use('/colyseus', monitor());
+		app.use('/monitor', monitor());
+
+		if (process.env.NODE_ENV !== 'production') {
+			app.use('/', playground);
+		} else {
+			app.use(express.static(path.join(__dirname, '../../../client/build')));
+			app.get('*', function (request, response) {
+				console.log('in it', path.resolve(__dirname, '../../../client/build/index.html'));
+				response.sendFile(path.resolve(__dirname, '../../../client/build/index.html'));
+			});
+		}
 	},
 });
