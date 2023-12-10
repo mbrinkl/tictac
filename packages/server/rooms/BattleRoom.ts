@@ -28,6 +28,7 @@ export class BattleRoom extends Room<GameState> {
 	}
 
 	onJoin(client: Client) {
+		console.log('in join', client.sessionId);
 		if (this.state.players.has(client.sessionId)) {
 			this.state.players.get(client.sessionId).isConnected = true;
 			return;
@@ -44,24 +45,17 @@ export class BattleRoom extends Room<GameState> {
 		}
 	}
 
-	// async onLeave(client: Client, consented: boolean) {
-	// 	console.log('IN LEAVE', client.sessionId);
-	// 	this.state.players.get(client.sessionId).isConnected = false;
+	async onLeave(client: Client, consented: boolean) {
+		this.state.players.get(client.sessionId).isConnected = false;
 
-	// 	try {
-	// 		if (consented) {
-	// 			throw new Error('consented leave');
-	// 		}
-
-	// 		// allow disconnected client to reconnect into this room until 20 seconds
-	// 		await this.allowReconnection(client, 20);
-
-	// 		// client returned! let's re-activate it.
-	// 		this.state.players.get(client.sessionId).isConnected = true;
-	// 	} catch (e) {
-	// 		console.log('in e', e);
-	// 		// 20 seconds expired. let's remove the client.
-	// 		// this.state.players.delete(client.sessionId);
-	// 	}
-	// }
+		try {
+			if (consented) {
+				throw new Error('consented leave');
+			}
+			await this.allowReconnection(client, 20);
+			this.state.players.get(client.sessionId).isConnected = true;
+		} catch (e) {
+			console.log('on leave error', e);
+		}
+	}
 }

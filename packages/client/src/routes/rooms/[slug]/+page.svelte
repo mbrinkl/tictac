@@ -7,6 +7,7 @@
 	import { isValidMove, type IGameState, GameStatus } from '../../../../../shared';
 	import PlayerInfo from './PlayerInfo.svelte';
 	import { getClient } from '$lib/util';
+	import { reconnectToken } from '$lib/gameStore';
 	import { onDestroy } from 'svelte';
 	import { getToastStore, type ToastSettings } from '@skeletonlabs/skeleton';
 
@@ -24,13 +25,16 @@
 
 	const join = async () => {
 		try {
-			if (data.slug === 'create') {
+			if ($reconnectToken) {
+				gameRoom = await client.reconnect($reconnectToken);
+			} else if (data.slug === 'create') {
 				const opts: { isPrivate: boolean } = { isPrivate: data.isPrivate };
 				gameRoom = await client.create<IGameState>('battle', opts);
 				history.replaceState(null, '', `/rooms/${gameRoom.id}`);
 			} else {
 				gameRoom = await client.joinById(data.slug);
 			}
+			$reconnectToken = gameRoom.reconnectionToken;
 			gameRoom.onStateChange((newState) => {
 				state = newState;
 			});
@@ -44,6 +48,7 @@
 	};
 
 	onDestroy(() => {
+		$reconnectToken = null;
 		gameRoom?.leave();
 	});
 
