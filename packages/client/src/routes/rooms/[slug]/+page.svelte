@@ -3,17 +3,24 @@
 
 	import clsx from 'clsx';
 	import type { Room } from 'colyseus.js';
-	import { ProgressRadial } from '@skeletonlabs/skeleton';
+	import { ProgressRadial, clipboard } from '@skeletonlabs/skeleton';
 	import { isValidMove, type IGameState } from '../../../../../shared';
 	import PlayerInfo from './PlayerInfo.svelte';
 	import { getClient } from '$lib/util';
 	import { onDestroy } from 'svelte';
+	import { getToastStore, type ToastSettings } from '@skeletonlabs/skeleton';
 
-	let gameRoom: Room<IGameState>;
-	let state: IGameState;
+	let gameRoom: Room<IGameState> | null = null;
+	let state: IGameState | null = null;
 	let err: any;
 
+	const toastStore = getToastStore();
 	const client = getClient();
+
+	const t: ToastSettings = {
+		message: 'URL copied to clipboard',
+		background: 'variant-filled-primary',
+	};
 
 	const join = async () => {
 		try {
@@ -43,14 +50,25 @@
 	join();
 </script>
 
-<a href="/">Back</a>
+<a class="absolute top-5 left-5" href="/">Back</a>
 
 {#if err}
 	<div>{err}</div>
 {:else if !gameRoom || !state || state.players.size !== 2}
-	<div class="flex flex-col justify-center items-center gap-3">
-		<div>Waiting on p2...</div>
-		<ProgressRadial width="w-10" meter="stroke-primary-500" track="stroke-primary-500/30" strokeLinecap="butt" />
+	<div class="h-full flex flex-col justify-center items-center gap-3">
+		<div class="flex gap-3">
+			<div>Waiting for another player...</div>
+			<ProgressRadial width="w-6" meter="stroke-primary-500" track="stroke-primary-500/30" strokeLinecap="butt" />
+		</div>
+		{#if gameRoom}
+			<button
+				class="btn variant-ghost-primary"
+				use:clipboard={window.location.origin + `/rooms/${gameRoom?.id}`}
+				on:click={() => toastStore.trigger(t)}
+			>
+				Invite
+			</button>
+		{/if}
 	</div>
 {:else}
 	{@const player = state.players.get(gameRoom.sessionId)}
@@ -64,9 +82,9 @@
 		<div class="board">
 			{#each state.board as value, index}
 				{@const isValid = isValidMove(index, state.board)}
-				<div class={clsx('cell', isValid && isActive && 'valid')} on:click={() => onCellClick(index)}>
+				<button class={clsx('cell', isValid && isActive && 'valid')} on:click={() => onCellClick(index)}>
 					{value}
-				</div>
+				</button>
 			{/each}
 		</div>
 	</div>
