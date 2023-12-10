@@ -5,11 +5,18 @@ import { Player } from '../schema/Player';
 import { ClickCellCommand } from '../commands/ClickCellCommand';
 import { NUM_PLAYERS } from '../../shared/config';
 
+interface IBattleRoomOptions {
+	isPrivate?: boolean;
+}
+
 export class BattleRoom extends Room<GameState> {
 	dispatcher = new Dispatcher(this);
 	started: boolean;
 
-	onCreate() {
+	onCreate(options: IBattleRoomOptions) {
+		if (options.isPrivate) {
+			this.setPrivate(true);
+		}
 		this.started = false;
 		this.setState(new GameState());
 
@@ -18,8 +25,6 @@ export class BattleRoom extends Room<GameState> {
 				sessionId: client.sessionId,
 				index,
 			});
-			// check for win condition
-			// check for draw condition
 		});
 	}
 

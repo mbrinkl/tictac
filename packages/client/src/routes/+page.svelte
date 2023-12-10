@@ -5,8 +5,12 @@
 
 	const client = getClient();
 
-	const create = () => {
+	const createPublic = () => {
 		goto('/rooms/create');
+	};
+
+	const createPrivate = () => {
+		goto('/rooms/create?private=true');
 	};
 
 	const join = (id: string) => {
@@ -44,6 +48,7 @@
 	</table>
 </div>
 
-<div class="flex justify-center">
-	<button class="btn variant-ghost-primary" on:click={create}>Create</button>
+<div class="flex justify-center gap-3">
+	<button class="btn variant-ghost-primary" on:click={createPublic}>Create Public</button>
+	<button class="btn variant-ghost-secondary" on:click={createPrivate}>Create Private</button>
 </div>

@@ -1,5 +1,5 @@
 <script lang="ts">
-	export let data: { slug: string };
+	export let data: { slug: string; isPrivate: boolean };
 
 	import clsx from 'clsx';
 	import type { Room } from 'colyseus.js';
@@ -18,7 +18,8 @@
 	const join = async () => {
 		try {
 			if (data.slug === 'create') {
-				gameRoom = await client.create<IGameState>('battle');
+				const opts: { isPrivate: boolean } = { isPrivate: data.isPrivate };
+				gameRoom = await client.create<IGameState>('battle', opts);
 				history.replaceState(null, '', `/rooms/${gameRoom.id}`);
 			} else {
 				gameRoom = await client.joinById(data.slug);
