@@ -31,7 +31,7 @@ export class ClickCellCommand extends Command<BattleRoom, IClickCellCommandArgs>
 		}
 
 		const player = this.state.players.get(sessionId);
-		if (player.id! == this.state.activePlayerId) {
+		if (player.id !== this.state.activePlayerId) {
 			return;
 		}
 
