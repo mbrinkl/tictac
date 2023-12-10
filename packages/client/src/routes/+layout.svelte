@@ -2,8 +2,12 @@
 	import '../app.pcss';
 	import { setContext } from 'svelte';
 	import { Client } from 'colyseus.js';
+	import { dev } from '$app/environment';
 
-	const client = new Client('ws://localhost:2567');
+	const { origin, protocol, hostname } = window.location;
+	const serverUrl = dev ? `${protocol}//${hostname}:${2567}` : origin;
+
+	const client = new Client(serverUrl);
 	setContext('client', client);
 </script>
 
