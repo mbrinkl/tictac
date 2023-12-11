@@ -6,8 +6,17 @@ export enum GameStatus {
 	Draw,
 }
 
+export interface IBattleRoomJoinOptions {
+	name?: string;
+}
+
+export interface IBattleRoomCreateOptions extends IBattleRoomJoinOptions {
+	isPrivate?: boolean;
+}
+
 export interface IPlayer {
 	id: number;
+	name: string;
 	mark: string;
 	isConnected: boolean;
 	timeRemainingMs: number;

@@ -4,10 +4,16 @@
 	import clsx from 'clsx';
 	import type { Room } from 'colyseus.js';
 	import { ProgressRadial, clipboard } from '@skeletonlabs/skeleton';
-	import { isValidMove, type IGameState, GameStatus } from '../../../../../shared';
+	import {
+		isValidMove,
+		type IGameState,
+		GameStatus,
+		type IBattleRoomCreateOptions,
+		type IBattleRoomJoinOptions,
+	} from '../../../../../shared';
 	import PlayerInfo from './PlayerInfo.svelte';
 	import { getClient } from '$lib/util';
-	import { reconnectToken } from '$lib/gameStore';
+	import { reconnectionStore } from '$lib/gameStore';
 	import { onDestroy } from 'svelte';
 	import { getToastStore, type ToastSettings } from '@skeletonlabs/skeleton';
 
@@ -25,16 +31,18 @@
 
 	const join = async () => {
 		try {
-			if ($reconnectToken) {
-				gameRoom = await client.reconnect($reconnectToken);
-			} else if (data.slug === 'create') {
-				const opts: { isPrivate: boolean } = { isPrivate: data.isPrivate };
+			if (data.slug === 'create') {
+				const opts: IBattleRoomCreateOptions = { isPrivate: data.isPrivate, name: 'Jake' };
 				gameRoom = await client.create<IGameState>('battle', opts);
 				history.replaceState(null, '', `/rooms/${gameRoom.id}`);
+			} else if ($reconnectionStore?.roomId === data.slug) {
+				gameRoom = await client.reconnect($reconnectionStore.token);
 			} else {
-				gameRoom = await client.joinById(data.slug);
+				const opts: IBattleRoomJoinOptions = { name: 'Noob' };
+				gameRoom = await client.joinById(data.slug, opts);
 			}
-			$reconnectToken = gameRoom.reconnectionToken;
+			$reconnectionStore = { roomId: gameRoom.id, token: gameRoom.reconnectionToken };
+			state = gameRoom.state;
 			gameRoom.onStateChange((newState) => {
 				state = newState;
 			});
@@ -48,11 +56,11 @@
 	};
 
 	onDestroy(() => {
-		$reconnectToken = null;
 		gameRoom?.leave();
 	});
 
 	join();
+	$: console.log('did the dang thing', gameRoom, state);
 </script>
 
 <a class="absolute top-5 left-5" href="/">Back</a>
@@ -88,60 +96,35 @@
 		<div>P1 wins</div>
 	{/if}
 
-	<div class={clsx('wrapper', isActive && 'active')}>
-		<div class="player-info">
-			<PlayerInfo player={p1} isClient={player?.id === p1.id} isActive={state.activePlayerId === p1.id} />
-			<PlayerInfo player={p2} isClient={player?.id === p2.id} isActive={state.activePlayerId === p2.id} />
-		</div>
-		<div class="board">
+	<div class="flex justify-center m-3">
+		<div class="board bg-gray-500">
 			{#each state.board as value, index}
-				{@const isValid = isValidMove(index, state.board)}
-				<button class={clsx('cell', isValid && isActive && 'valid')} on:click={() => onCellClick(index)}>
-					{value}
-				</button>
+				{@const clickable = isActive && isValidMove(index, state.board)}
+				<div
+					class={clsx(
+						'bg-gray-300 flex items-center justify-center',
+						clickable && 'cursor-pointer hover:bg-primary-300',
+					)}
+					role={clickable ? 'button' : 'none'}
+					on:click={() => onCellClick(index)}
+				>
+					<span class="text-xl text-primary-500 font-bold">{value}</span>
+				</div>
 			{/each}
 		</div>
+	</div>
+	<div class="flex justify-between">
+		<PlayerInfo player={p1} isClient={player?.id === p1.id} isActive={state.activePlayerId === p1.id} />
+		<PlayerInfo player={p2} isClient={player?.id === p2.id} isActive={state.activePlayerId === p2.id} />
 	</div>
 {/if}
 
 <style>
-	.wrapper {
-		border: 2px solid yellow;
-		border-radius: 5%;
-		padding: 10px;
-	}
-
-	.active {
-		border-color: lime;
-	}
-
-	.player-info {
-		display: flex;
-		justify-content: space-between;
-	}
-
 	.board {
 		display: grid;
 		grid-gap: 4px;
-		background-color: white;
 		grid-template-columns: repeat(3, 1fr);
 		grid-auto-rows: minmax(100px, auto);
 		width: 300px;
-	}
-
-	.cell {
-		background-color: gray;
-		display: flex;
-		align-items: center;
-		justify-content: center;
-		font-weight: bold;
-	}
-
-	.valid {
-		cursor: pointer;
-	}
-
-	.valid:hover {
-		background-color: purple;
 	}
 </style>

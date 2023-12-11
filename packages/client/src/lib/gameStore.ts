@@ -1,4 +1,9 @@
 import { localStorageStore } from '@skeletonlabs/skeleton';
 import type { Writable } from 'svelte/store';
 
-export const reconnectToken: Writable<string | null> = localStorageStore('reconnect-token', null);
+interface IReconnectionStore {
+	roomId: string;
+	token: string;
+}
+
+export const reconnectionStore: Writable<IReconnectionStore | null> = localStorageStore('reconnect-token', null);
