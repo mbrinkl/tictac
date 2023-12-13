@@ -14,8 +14,9 @@
 	import PlayerInfo from './PlayerInfo.svelte';
 	import { getClient } from '$lib/util';
 	import { reconnectionStore } from '$lib/gameStore';
-	import { onDestroy } from 'svelte';
+	import { onDestroy, onMount } from 'svelte';
 	import { getToastStore, type ToastSettings } from '@skeletonlabs/skeleton';
+	import { goto } from '$app/navigation';
 
 	let gameRoom: Room<IGameState> | null = null;
 	let state: IGameState | null = null;
@@ -34,7 +35,7 @@
 			if (data.slug === 'create') {
 				const opts: IBattleRoomCreateOptions = { isPrivate: data.isPrivate, name: 'Jake' };
 				gameRoom = await client.create<IGameState>('battle', opts);
-				history.replaceState(null, '', `/rooms/${gameRoom.id}`);
+				goto(`/rooms/${gameRoom.id}`, { replaceState: true });
 			} else if ($reconnectionStore?.roomId === data.slug) {
 				gameRoom = await client.reconnect($reconnectionStore.token);
 			} else {
@@ -55,15 +56,17 @@
 		gameRoom?.send('cell_click', index);
 	};
 
-	onDestroy(() => {
-		gameRoom?.leave();
+	onMount(async () => {
+		await join();
 	});
 
-	join();
-	$: console.log('did the dang thing', gameRoom, state);
+	onDestroy(async () => {
+		$reconnectionStore = null;
+		await gameRoom?.leave();
+	});
 </script>
 
-<a class="absolute top-5 left-5" href="/">Back</a>
+<a class="anchor" href="/">Back</a>
 
 {#if err}
 	<div>{err}</div>

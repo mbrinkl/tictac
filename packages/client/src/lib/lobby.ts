@@ -1,10 +1,12 @@
-import type { RoomAvailable, Client } from 'colyseus.js';
+import type { RoomAvailable, Client, Room } from 'colyseus.js';
 import { readonly, writable } from 'svelte/store';
+import type { IGameState } from '../../../shared';
 
-const store = writable<RoomAvailable[]>([]);
+const store = writable<RoomAvailable<IGameState>[]>([]);
+let lobby: Room<IGameState> | null;
 
 export const joinLobby = async (client: Client) => {
-	const lobby = await client.joinOrCreate('lobby');
+	lobby = await client.joinOrCreate('lobby');
 
 	lobby.onMessage('rooms', (rooms) => {
 		store.set(rooms);
@@ -26,6 +28,11 @@ export const joinLobby = async (client: Client) => {
 	lobby.onMessage('-', (roomId) => {
 		store.update((prev) => prev.filter((room) => room.roomId !== roomId));
 	});
+};
+
+export const leaveLobby = async () => {
+	store.set([]);
+	await lobby?.leave();
 };
 
 export const lobbyRooms = readonly(store);

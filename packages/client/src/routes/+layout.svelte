@@ -14,6 +14,11 @@
 	setContext('client', client);
 </script>
 
+<svelte:head>
+	<title>TicTacToe</title>
+	<meta name="description" content="TicTacToe with Coylseus" />
+</svelte:head>
+
 <Toast />
 
 <div class="container mx-auto py-3 h-screen">

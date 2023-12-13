@@ -1,8 +1,10 @@
 <script lang="ts">
 	import { goto } from '$app/navigation';
-	import { joinLobby, lobbyRooms } from '$lib/lobby';
+	import { joinLobby, leaveLobby, lobbyRooms } from '$lib/lobby';
 	import { getClient } from '$lib/util';
 	import { Tab, TabGroup } from '@skeletonlabs/skeleton';
+	import { NUM_PLAYERS } from '../../../shared/config';
+	import { onDestroy, onMount } from 'svelte';
 
 	const client = getClient();
 	let tabSet: number = 0;
@@ -19,13 +21,14 @@
 		goto('/rooms/' + id);
 	};
 
-	joinLobby(client);
-</script>
+	onMount(async () => {
+		await joinLobby(client);
+	});
 
-<svelte:head>
-	<title>Home</title>
-	<meta name="description" content="Svelte demo app" />
-</svelte:head>
+	onDestroy(async () => {
+		await leaveLobby();
+	});
+</script>
 
 <TabGroup justify="justify-center">
 	<Tab bind:group={tabSet} name="joinTab" value={0}>Join</Tab>
@@ -42,7 +45,7 @@
 				</thead>
 				<tbody>
 					{#if tabSet === 0}
-						{#each $lobbyRooms as room}
+						{#each $lobbyRooms.filter((r) => r.clients < NUM_PLAYERS) as room}
 							<tr class="cursor-pointer" on:click={() => join(room.roomId)}>
 								<td>{room.roomId}</td>
 								<td>...</td>
@@ -53,9 +56,16 @@
 							</tr>
 						{/each}
 					{:else}
-						<tr>
-							<td colspan={2}>No Games to Spectate</td>
-						</tr>
+						{#each $lobbyRooms.filter((r) => r.clients >= NUM_PLAYERS) as room}
+							<tr class="cursor-pointer" on:click={() => join(room.roomId)}>
+								<td>{room.roomId}</td>
+								<td>...</td>
+							</tr>
+						{:else}
+							<tr>
+								<td colspan={2}>No Games to Spectate</td>
+							</tr>
+						{/each}
 					{/if}
 				</tbody>
 			</table>
