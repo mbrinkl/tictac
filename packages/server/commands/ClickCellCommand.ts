@@ -1,5 +1,5 @@
 import { Command } from '@colyseus/command';
-import { BattleRoom } from '../rooms/BattleRoom';
+import { GameRoom } from '../GameRoom';
 import { isValidMove } from '../../shared/moves';
 import { NUM_PLAYERS } from '../../shared/config';
 import { GameStatus } from '../../shared/models';
@@ -25,7 +25,7 @@ interface IClickCellCommandArgs {
 	index: number;
 }
 
-export class ClickCellCommand extends Command<BattleRoom, IClickCellCommandArgs> {
+export class ClickCellCommand extends Command<GameRoom, IClickCellCommandArgs> {
 	execute({ sessionId, index }: IClickCellCommandArgs) {
 		if (this.state.status !== GameStatus.InProgress || !isValidMove(index, this.state.board)) {
 			return;

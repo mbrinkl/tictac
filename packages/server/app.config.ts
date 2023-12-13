@@ -1,15 +1,16 @@
 import config from '@colyseus/tools';
 import { monitor } from '@colyseus/monitor';
 import { playground } from '@colyseus/playground';
-import { BattleRoom } from './rooms/BattleRoom';
+import { GameRoom } from './GameRoom';
 import { LobbyRoom } from 'colyseus';
 import express from 'express';
 import path from 'path';
+import { GAME_ROOM, LOBBY_ROOM } from '../shared/config';
 
 export default config({
 	initializeGameServer: (gameServer) => {
-		gameServer.define('lobby', LobbyRoom);
-		gameServer.define('battle', BattleRoom).enableRealtimeListing();
+		gameServer.define(LOBBY_ROOM, LobbyRoom);
+		gameServer.define(GAME_ROOM, GameRoom).enableRealtimeListing();
 	},
 
 	initializeExpress: (app) => {

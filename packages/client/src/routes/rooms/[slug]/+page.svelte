@@ -8,8 +8,8 @@
 		isValidMove,
 		type IGameState,
 		GameStatus,
-		type IBattleRoomCreateOptions,
-		type IBattleRoomJoinOptions,
+		type IGameRoomCreateOptions,
+		type IGameRoomJoinOptions,
 	} from '../../../../../shared';
 	import PlayerInfo from './PlayerInfo.svelte';
 	import { getClient } from '$lib/util';
@@ -33,13 +33,13 @@
 	const join = async () => {
 		try {
 			if (data.slug === 'create') {
-				const opts: IBattleRoomCreateOptions = { isPrivate: data.isPrivate, name: 'Jake' };
-				gameRoom = await client.create<IGameState>('battle', opts);
+				const opts: IGameRoomCreateOptions = { isPrivate: data.isPrivate, name: 'Jake' };
+				gameRoom = await client.create<IGameState>('game', opts);
 				goto(`/rooms/${gameRoom.id}`, { replaceState: true });
 			} else if ($reconnectionStore?.roomId === data.slug) {
 				gameRoom = await client.reconnect($reconnectionStore.token);
 			} else {
-				const opts: IBattleRoomJoinOptions = { name: 'Noob' };
+				const opts: IGameRoomJoinOptions = { name: 'Noob' };
 				gameRoom = await client.joinById(data.slug, opts);
 			}
 			$reconnectionStore = { roomId: gameRoom.id, token: gameRoom.reconnectionToken };

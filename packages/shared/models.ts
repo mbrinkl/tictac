@@ -6,11 +6,11 @@ export enum GameStatus {
 	Draw,
 }
 
-export interface IBattleRoomJoinOptions {
+export interface IGameRoomJoinOptions {
 	name?: string;
 }
 
-export interface IBattleRoomCreateOptions extends IBattleRoomJoinOptions {
+export interface IGameRoomCreateOptions extends IGameRoomJoinOptions {
 	isPrivate?: boolean;
 }
 

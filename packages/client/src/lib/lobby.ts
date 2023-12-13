@@ -1,12 +1,12 @@
 import type { RoomAvailable, Client, Room } from 'colyseus.js';
 import { readonly, writable } from 'svelte/store';
-import type { IGameState } from '../../../shared';
+import { LOBBY_ROOM, type IGameState } from '../../../shared';
 
 const store = writable<RoomAvailable<IGameState>[]>([]);
 let lobby: Room<IGameState> | null;
 
 export const joinLobby = async (client: Client) => {
-	lobby = await client.joinOrCreate('lobby');
+	lobby = await client.joinOrCreate(LOBBY_ROOM);
 
 	lobby.onMessage('rooms', (rooms) => {
 		store.set(rooms);

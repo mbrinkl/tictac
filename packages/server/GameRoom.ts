@@ -1,15 +1,15 @@
 import { Dispatcher } from '@colyseus/command';
 import { Client, Room } from 'colyseus';
-import { GameState } from '../schema/GameState';
-import { Player } from '../schema/Player';
-import { ClickCellCommand } from '../commands/ClickCellCommand';
-import { NUM_PLAYERS } from '../../shared/config';
-import { GameStatus, IBattleRoomCreateOptions, IBattleRoomJoinOptions } from '../../shared/models';
+import { GameState } from './schema/GameState';
+import { Player } from './schema/Player';
+import { ClickCellCommand } from './commands/ClickCellCommand';
+import { NUM_PLAYERS } from '../shared/config';
+import { GameStatus, IGameRoomCreateOptions, IGameRoomJoinOptions } from '../shared/models';
 
-export class BattleRoom extends Room<GameState> {
+export class GameRoom extends Room<GameState> {
 	dispatcher = new Dispatcher(this);
 
-	onCreate(options: IBattleRoomCreateOptions) {
+	onCreate(options: IGameRoomCreateOptions) {
 		if (options.isPrivate) {
 			this.setPrivate(true);
 		}
@@ -23,7 +23,7 @@ export class BattleRoom extends Room<GameState> {
 		});
 	}
 
-	onJoin(client: Client, options: IBattleRoomJoinOptions) {
+	onJoin(client: Client, options: IGameRoomJoinOptions) {
 		const playerId = this.state.players.size;
 		if (playerId === NUM_PLAYERS) {
 			return;
