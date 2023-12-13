@@ -3,7 +3,7 @@ import { Client, Room } from 'colyseus';
 import { GameState } from './schema/GameState';
 import { Player } from './schema/Player';
 import { ClickCellCommand } from './commands/ClickCellCommand';
-import { NUM_PLAYERS } from '../shared/config';
+import { CELL_CLICK_COMMAND, NUM_PLAYERS } from '../shared/config';
 import { GameStatus, IGameRoomCreateOptions, IGameRoomJoinOptions } from '../shared/models';
 
 export class GameRoom extends Room<GameState> {
@@ -15,7 +15,7 @@ export class GameRoom extends Room<GameState> {
 		}
 		this.setState(new GameState());
 
-		this.onMessage('cell_click', (client, index: number) => {
+		this.onMessage(CELL_CLICK_COMMAND, (client, index: number) => {
 			this.dispatcher.dispatch(new ClickCellCommand(), {
 				sessionId: client.sessionId,
 				index,
@@ -36,7 +36,6 @@ export class GameRoom extends Room<GameState> {
 	}
 
 	async onLeave(client: Client, consented: boolean) {
-		console.log('in leave', client.sessionId);
 		// handle spectators
 		if (!this.state.players.has(client.sessionId)) return;
 
@@ -52,7 +51,6 @@ export class GameRoom extends Room<GameState> {
 			this.state.players.get(client.sessionId).isConnected = true;
 		} catch (e) {
 			// end game by forfeit
-			console.log('on leave error', e);
 		}
 	}
 }

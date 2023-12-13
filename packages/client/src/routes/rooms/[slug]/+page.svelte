@@ -10,6 +10,7 @@
 		GameStatus,
 		type IGameRoomCreateOptions,
 		type IGameRoomJoinOptions,
+		CELL_CLICK_COMMAND,
 	} from '../../../../../shared';
 	import PlayerInfo from './PlayerInfo.svelte';
 	import { getClient } from '$lib/util';
@@ -53,7 +54,7 @@
 	};
 
 	const onCellClick = (index: number) => {
-		gameRoom?.send('cell_click', index);
+		gameRoom?.send(CELL_CLICK_COMMAND, index);
 	};
 
 	onMount(async () => {
