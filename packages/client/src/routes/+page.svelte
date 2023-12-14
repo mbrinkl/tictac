@@ -36,11 +36,11 @@
 
 	<svelte:fragment slot="panel">
 		<div class="table-container mb-3">
-			<table class="table table-hover table-compact">
+			<table class="table table-hover table-compact table-fixed text-center">
 				<thead>
 					<tr>
-						<th>ID</th>
-						<th>Created By</th>
+						<th class="text-center">Player</th>
+						<th class="text-center">Time</th>
 					</tr>
 				</thead>
 				<tbody>
