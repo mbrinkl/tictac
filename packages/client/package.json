@@ -2,6 +2,7 @@
 	"name": "@tictac/client",
 	"version": "0.0.1",
 	"private": true,
+	"type": "module",
 	"scripts": {
 		"prepare": "svelte-kit sync",
 		"dev": "vite dev",
@@ -24,11 +25,15 @@
 		"tslib": "^2.4.1",
 		"vite": "^4.4.2"
 	},
-	"type": "module",
 	"dependencies": {
 		"@sveltejs/adapter-static": "^2.0.3",
 		"@tictac/shared": "workspace:^",
 		"clsx": "^2.0.0",
 		"colyseus.js": "^0.15.14"
+	},
+	"dependenciesMeta": {
+		"@tictac/shared": {
+			"injected": true
+		}
 	}
 }

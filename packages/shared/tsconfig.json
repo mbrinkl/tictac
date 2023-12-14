@@ -1,6 +1,6 @@
 {
 	"compilerOptions": {
-		"module": "commonjs",
+		"module": "CommonJS",
 		"target": "ESNext",
 		"sourceMap": true,
 		"strict": true,
@@ -14,6 +14,5 @@
 
 		"outDir": "./dist"
 	},
-	"include": ["src/**/*"],
-	"exclude": ["node_modules", "dist"]
+	"include": ["src/**/*"]
 }

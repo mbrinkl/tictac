@@ -1,13 +1,12 @@
 {
 	"name": "@tictac/shared",
 	"version": "1.0.0",
-	"description": "",
 	"main": "dist/index",
 	"types": "dist/index",
 	"files": [
 		"dist"
 	],
 	"scripts": {
-		"build": "tsc"
+		"build": "rimraf dist && tsc"
 	}
 }
