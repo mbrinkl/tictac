@@ -2,11 +2,10 @@
 	"name": "tictac",
 	"private": true,
 	"version": "0.0.0",
-	"type": "module",
 	"scripts": {
 		"start": "concurrently -c magenta,cyan \"pnpm client dev\" \"pnpm srv start\"",
-		"start:prod": "node ./packages/server/build/server/index.js",
-		"build": "pnpm client build && pnpm srv build",
+		"start:prod": "node ./packages/server/dist/index.js",
+		"build": "pnpm -r build",
 		"lint": "eslint . --ext ts,tsx --report-unused-disable-directives --max-warnings 0",
 		"client": "pnpm -C packages/client",
 		"srv": "pnpm -C packages/server",

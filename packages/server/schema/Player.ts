@@ -1,5 +1,5 @@
 import { Schema, type } from '@colyseus/schema';
-import { IPlayer } from '../../shared';
+import { IPlayer } from '@tictac/shared';
 
 export class Player extends Schema implements IPlayer {
 	@type('number') id;

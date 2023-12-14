@@ -11,7 +11,7 @@
 		type IGameRoomCreateOptions,
 		type IGameRoomJoinOptions,
 		CELL_CLICK_COMMAND,
-	} from '../../../../../shared';
+	} from '@tictac/shared';
 	import PlayerInfo from './PlayerInfo.svelte';
 	import { getClient } from '$lib/util';
 	import { reconnectionStore } from '$lib/gameStore';

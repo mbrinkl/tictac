@@ -6,19 +6,13 @@
 		"esModuleInterop": true,
 		"strict": true,
 		"noUncheckedIndexedAccess": true,
-		// "noImplicitOverride": true,
 		"forceConsistentCasingInFileNames": true,
 		"useDefineForClassFields": false,
 		"strictNullChecks": false,
 		"allowJs": true,
 		"skipLibCheck": true,
-
-		"outDir": "./build",
-
 		"experimentalDecorators": true,
-		"paths": {
-			"@shared": ["../shared"]
-		}
+		"outDir": "dist"
 	},
-	"include": [".", "../shared"]
+	"include": ["."]
 }

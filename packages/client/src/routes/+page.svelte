@@ -3,7 +3,7 @@
 	import { joinLobby, leaveLobby, lobbyRooms } from '$lib/lobby';
 	import { getClient } from '$lib/util';
 	import { Tab, TabGroup } from '@skeletonlabs/skeleton';
-	import { NUM_PLAYERS } from '../../../shared/config';
+	import { NUM_PLAYERS } from '@tictac/shared';
 	import { onDestroy, onMount } from 'svelte';
 
 	const client = getClient();

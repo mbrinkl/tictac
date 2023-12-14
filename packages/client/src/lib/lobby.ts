@@ -1,6 +1,6 @@
 import type { RoomAvailable, Client, Room } from 'colyseus.js';
 import { readonly, writable } from 'svelte/store';
-import { LOBBY_ROOM, type IGameState } from '../../../shared';
+import { LOBBY_ROOM, type IGameState } from '@tictac/shared';
 
 const store = writable<RoomAvailable<IGameState>[]>([]);
 let lobby: Room<IGameState> | null;

@@ -1,14 +1,19 @@
 {
-  "compilerOptions": {
-    "target": "ESNext",
-    "moduleResolution": "Node",
-    "module": "commonjs",
-    "esModuleInterop": true,
-    "strict": true,
-    "noUncheckedIndexedAccess": true,
-    "noImplicitOverride": true,
-    "forceConsistentCasingInFileNames": true,
-    "useDefineForClassFields": false,
-    "experimentalDecorators": true
-  }
+	"compilerOptions": {
+		"module": "commonjs",
+		"target": "ESNext",
+		"sourceMap": true,
+		"strict": true,
+		"declaration": true,
+		"declarationMap": true,
+		"noEmitOnError": true,
+		"skipLibCheck": true,
+		"esModuleInterop": true,
+		"types": [],
+		"noEmit": false,
+
+		"outDir": "./dist"
+	},
+	"include": ["src/**/*"],
+	"exclude": ["node_modules", "dist"]
 }

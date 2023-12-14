@@ -1,10 +1,15 @@
 import { Dispatcher } from '@colyseus/command';
 import { Client, Room } from 'colyseus';
+import {
+	CELL_CLICK_COMMAND,
+	NUM_PLAYERS,
+	GameStatus,
+	IGameRoomCreateOptions,
+	IGameRoomJoinOptions,
+} from '@tictac/shared';
 import { GameState } from './schema/GameState';
 import { Player } from './schema/Player';
 import { ClickCellCommand } from './commands/ClickCellCommand';
-import { CELL_CLICK_COMMAND, NUM_PLAYERS } from '../shared/config';
-import { GameStatus, IGameRoomCreateOptions, IGameRoomJoinOptions } from '../shared/models';
 
 export class GameRoom extends Room<GameState> {
 	dispatcher = new Dispatcher(this);

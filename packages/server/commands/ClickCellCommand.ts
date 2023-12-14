@@ -1,8 +1,6 @@
 import { Command } from '@colyseus/command';
+import { isValidMove, NUM_PLAYERS, GameStatus } from '@tictac/shared';
 import { GameRoom } from '../GameRoom';
-import { isValidMove } from '../../shared/moves';
-import { NUM_PLAYERS } from '../../shared/config';
-import { GameStatus } from '../../shared/models';
 
 const winConditions = [
 	[0, 1, 2],

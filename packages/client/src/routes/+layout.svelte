@@ -1,9 +1,9 @@
 <script lang="ts">
-	import '../app.pcss';
 	import { setContext } from 'svelte';
 	import { Client } from 'colyseus.js';
 	import { dev } from '$app/environment';
 	import { initializeStores, Toast } from '@skeletonlabs/skeleton';
+	import '../app.pcss';
 
 	initializeStores();
 

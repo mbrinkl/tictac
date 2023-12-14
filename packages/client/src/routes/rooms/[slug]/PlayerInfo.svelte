@@ -4,7 +4,7 @@
 	export let isActive: boolean;
 
 	import clsx from 'clsx';
-	import type { IPlayer } from '../../../../../shared';
+	import type { IPlayer } from '@tictac/shared';
 
 	let start = 0;
 	let now = 0;

@@ -1,4 +1,4 @@
-import { GameStatus, IGameState } from '../../shared';
+import { GameStatus, IGameState } from '@tictac/shared';
 import { Schema, MapSchema, ArraySchema, type } from '@colyseus/schema';
 import { Player } from './Player';
 
