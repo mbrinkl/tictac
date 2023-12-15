@@ -1,12 +1,25 @@
 {
 	"name": "@tictac/shared",
 	"version": "1.0.0",
-	"main": "dist/index",
-	"types": "dist/index",
+	"type": "module",
 	"files": [
 		"dist"
 	],
+	"main": "./dist/shared.umd.cjs",
+	"module": "./dist/shared.js",
+	"types": "./dist/main.d.ts",
+	"exports": {
+		".": {
+			"import": "./dist/shared.js",
+			"require": "./dist/shared.umd.cjs",
+			"types": "./dist/main.d.ts"
+		}
+	},
 	"scripts": {
-		"build": "rimraf dist && tsc"
+		"build": "rimraf dist && vite build"
+	},
+	"devDependencies": {
+		"vite": "^4.4.2",
+		"vite-plugin-dts": "^3.6.4"
 	}
 }
