@@ -5,13 +5,13 @@
 	"files": [
 		"dist"
 	],
-	"main": "./dist/shared.umd.cjs",
-	"module": "./dist/shared.js",
+	"main": "./dist/main.umd.cjs",
+	"module": "./dist/main.js",
 	"types": "./dist/main.d.ts",
 	"exports": {
 		".": {
-			"import": "./dist/shared.js",
-			"require": "./dist/shared.umd.cjs",
+			"import": "./dist/main.js",
+			"require": "./dist/main.umd.cjs",
 			"types": "./dist/main.d.ts"
 		}
 	},

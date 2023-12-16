@@ -6,8 +6,8 @@ export default defineConfig({
 	build: {
 		lib: {
 			entry: resolve(__dirname, 'lib/main.ts'),
-			name: 'MyLib',
-			fileName: 'shared',
+			name: '@tictac/shared',
+			fileName: 'main',
 		},
 	},
 	plugins: [dts()],
