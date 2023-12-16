@@ -7,6 +7,9 @@ const config = {
 
 	kit: {
 		adapter: adapter({ fallback: 'index.html', pages: 'dist' }),
+		alias: {
+			'@tictac/shared': '../shared/src',
+		},
 	},
 };
 

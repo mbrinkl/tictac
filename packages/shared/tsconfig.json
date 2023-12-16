@@ -11,5 +11,5 @@
 		"esModuleInterop": true,
 		"noEmit": false
 	},
-	"include": ["lib"]
+	"include": ["src"]
 }

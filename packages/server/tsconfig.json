@@ -12,7 +12,10 @@
 		"allowJs": true,
 		"skipLibCheck": true,
 		"experimentalDecorators": true,
-		"outDir": "dist"
+		"outDir": "dist",
+		"paths": {
+			"@tictac/shared": ["../shared/src"]
+		}
 	},
 	"include": ["src"]
 }

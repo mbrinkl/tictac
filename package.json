@@ -3,7 +3,7 @@
 	"private": true,
 	"version": "0.0.0",
 	"scripts": {
-		"start": "concurrently -c magenta,cyan \"pnpm client dev\" \"pnpm srv start\"",
+		"start": "concurrently -n client,server -c magenta,cyan \"pnpm client dev\" \"pnpm srv start\"",
 		"start:prod": "node ./packages/server/dist/index.js",
 		"build": "pnpm -r build",
 		"lint": "eslint . --ext ts,tsx --report-unused-disable-directives --max-warnings 0",
@@ -21,7 +21,6 @@
 		"eslint-plugin-svelte": "^2.35.1",
 		"prettier": "^3.1.0",
 		"prettier-plugin-svelte": "^3.1.2",
-		"rimraf": "^5.0.5",
 		"typescript": "^5.2.2"
 	}
 }

@@ -5,18 +5,19 @@
 	"files": [
 		"dist"
 	],
-	"main": "./dist/main.umd.cjs",
-	"module": "./dist/main.js",
-	"types": "./dist/main.d.ts",
+	"main": "./dist/index.umd.cjs",
+	"module": "./dist/index.js",
+	"types": "./dist/index.d.ts",
 	"exports": {
 		".": {
-			"import": "./dist/main.js",
-			"require": "./dist/main.umd.cjs",
-			"types": "./dist/main.d.ts"
+			"import": "./dist/index.js",
+			"require": "./dist/index.umd.cjs",
+			"types": "./dist/index.d.ts"
 		}
 	},
 	"scripts": {
-		"build": "rimraf dist && vite build"
+		"build": "vite build",
+		"watch": "vite build --watch"
 	},
 	"devDependencies": {
 		"vite": "^4.4.2",
