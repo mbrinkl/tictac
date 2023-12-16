@@ -14,5 +14,5 @@
 		"experimentalDecorators": true,
 		"outDir": "dist"
 	},
-	"include": ["."]
+	"include": ["src"]
 }

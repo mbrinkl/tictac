@@ -1,15 +1,11 @@
 {
 	"name": "@tictac/server",
 	"version": "1.0.0",
-	"description": "",
 	"main": "index.js",
 	"scripts": {
-		"start": "tsx watch --tsconfig ./tsconfig.json index.ts",
+		"start": "tsx watch src/index.ts",
 		"build": "tsc"
 	},
-	"keywords": [],
-	"author": "",
-	"license": "ISC",
 	"dependencies": {
 		"@colyseus/command": "^0.2.1",
 		"@colyseus/monitor": "^0.15.4",
