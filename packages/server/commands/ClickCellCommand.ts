@@ -25,7 +25,11 @@ interface IClickCellCommandArgs {
 
 export class ClickCellCommand extends Command<GameRoom, IClickCellCommandArgs> {
 	execute({ sessionId, index }: IClickCellCommandArgs) {
-		if (this.state.status !== GameStatus.InProgress || !isValidMove(index, this.state.board)) {
+		if (
+			this.state.status !== GameStatus.InProgress ||
+			!this.state.players.has(sessionId) ||
+			!isValidMove(index, this.state.board)
+		) {
 			return;
 		}
 
