@@ -1,21 +1,8 @@
 {
+	"extends": "./tsconfig.build.json",
 	"compilerOptions": {
-		"target": "ESNext",
-		"moduleResolution": "Node",
-		"module": "CommonJS",
-		"esModuleInterop": true,
-		"strict": true,
-		"noUncheckedIndexedAccess": true,
-		"forceConsistentCasingInFileNames": true,
-		"useDefineForClassFields": false,
-		"strictNullChecks": false,
-		"allowJs": true,
-		"skipLibCheck": true,
-		"experimentalDecorators": true,
-		"outDir": "dist",
 		"paths": {
 			"@tictac/shared": ["../shared/src"]
 		}
-	},
-	"include": ["src"]
+	}
 }

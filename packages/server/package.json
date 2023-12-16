@@ -4,7 +4,7 @@
 	"main": "index.js",
 	"scripts": {
 		"start": "tsx watch --clear-screen=false src/index.ts",
-		"build": "tsc"
+		"build": "tsc -p ./tsconfig.build.json"
 	},
 	"dependencies": {
 		"@colyseus/command": "^0.2.1",
