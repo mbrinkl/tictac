@@ -16,8 +16,7 @@
 		}
 	},
 	"scripts": {
-		"build": "vite build",
-		"watch": "vite build --watch"
+		"build": "vite build"
 	},
 	"devDependencies": {
 		"vite": "^4.4.2",
