@@ -25,18 +25,9 @@ interface IClickCellCommandArgs {
 
 export class ClickCellCommand extends Command<GameRoom, IClickCellCommandArgs> {
 	execute({ sessionId, index }: IClickCellCommandArgs) {
-		if (
-			this.state.status !== GameStatus.InProgress ||
-			!this.state.players.has(sessionId) ||
-			!isValidMove(index, this.state.board)
-		) {
-			return;
-		}
+		if (!this.room.canMakeMove(sessionId) || !isValidMove(index, this.state.board)) return;
 
 		const player = this.state.players.get(sessionId);
-		if (player.id !== this.state.activePlayerId) {
-			return;
-		}
 
 		const { elapsedTime } = this.clock;
 		player.timeRemainingMs -= elapsedTime - this.state.lastElapsed;
@@ -45,11 +36,12 @@ export class ClickCellCommand extends Command<GameRoom, IClickCellCommandArgs> {
 		this.state.board[index] = player.mark;
 
 		if (isVictory(this.state.board, player.mark)) {
-			this.state.status = player.id === 0 ? GameStatus.WinP0 : GameStatus.WinP1;
+			this.state.status = GameStatus.Finished;
+			this.state.winnerId = player.id;
 			this.clock.stop();
 			return;
 		} else if (this.state.board.every((cell) => cell !== '')) {
-			this.state.status = GameStatus.Draw;
+			this.state.status = GameStatus.Finished;
 			this.clock.stop();
 			return;
 		}

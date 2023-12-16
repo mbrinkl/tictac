@@ -1,9 +1,9 @@
 export enum GameStatus {
 	None,
 	InProgress,
-	WinP0,
-	WinP1,
-	Draw,
+	Finished,
+	Forfeited,
+	TimedOut,
 }
 
 export interface IGameRoomJoinOptions {
@@ -28,4 +28,5 @@ export interface IGameState {
 	activePlayerId: number;
 	lastElapsed: number;
 	status: GameStatus;
+	winnerId: number;
 }

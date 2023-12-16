@@ -92,12 +92,10 @@
 	{@const [p1, p2] = Array.from(state.players.values())}
 	{@const isActive = state.activePlayerId === player?.id}
 
-	{#if state.status === GameStatus.Draw}
+	{#if state.status === GameStatus.Finished && state.winnerId === -1}
 		<div>Draw</div>
-	{:else if state.status === GameStatus.WinP0}
-		<div>P0 wins</div>
-	{:else if state.status === GameStatus.WinP1}
-		<div>P1 wins</div>
+	{:else if state.status === GameStatus.Finished}
+		<div>P{state.winnerId} wins</div>
 	{/if}
 
 	<div class="flex justify-center m-3">

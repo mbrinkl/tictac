@@ -34,6 +34,7 @@ export class GameRoom extends Room<GameState> {
 			return;
 		}
 		this.state.players.set(client.sessionId, new Player(playerId, options.name));
+
 		if (this.state.players.size === NUM_PLAYERS) {
 			this.state.status = GameStatus.InProgress;
 			this.clock.start();
@@ -47,7 +48,7 @@ export class GameRoom extends Room<GameState> {
 		this.state.players.get(client.sessionId).isConnected = false;
 
 		if (consented) {
-			// end game by forfeit
+			this.forfeit(client.sessionId);
 			return;
 		}
 
@@ -55,7 +56,22 @@ export class GameRoom extends Room<GameState> {
 			await this.allowReconnection(client, 20);
 			this.state.players.get(client.sessionId).isConnected = true;
 		} catch (e) {
-			// end game by forfeit
+			this.forfeit(client.sessionId);
 		}
+	}
+
+	forfeit(sessionId: string) {
+		if (this.state.status !== GameStatus.InProgress) return;
+		const player = this.state.players.get(sessionId);
+		this.state.status = GameStatus.Forfeited;
+		this.state.winnerId = (player.id + 1) % 2;
+	}
+
+	canMakeMove(sessionId: string): boolean {
+		return (
+			this.state.status === GameStatus.InProgress &&
+			this.state.players.has(sessionId) &&
+			this.state.players.get(sessionId).id === this.state.activePlayerId
+		);
 	}
 }

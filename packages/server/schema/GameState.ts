@@ -8,4 +8,5 @@ export class GameState extends Schema implements IGameState {
 	@type('number') activePlayerId = 0;
 	@type('number') lastElapsed = 0;
 	@type('number') status = GameStatus.None;
+	@type('number') winnerId = -1;
 }
