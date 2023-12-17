@@ -1,5 +1,5 @@
 import { Dispatcher } from '@colyseus/command';
-import { Client, Delayed, Room } from 'colyseus';
+import { Client, Delayed, Room, updateLobby } from 'colyseus';
 import {
 	CELL_CLICK_COMMAND,
 	NUM_PLAYERS,
@@ -15,7 +15,7 @@ export class GameRoom extends Room<GameState> {
 	endGameTimer: Delayed;
 	dispatcher = new Dispatcher(this);
 
-	onCreate(options: IGameRoomCreateOptions) {
+	async onCreate(options: IGameRoomCreateOptions) {
 		if (options.isPrivate) {
 			this.setPrivate(true);
 		}
@@ -27,13 +27,22 @@ export class GameRoom extends Room<GameState> {
 				index,
 			});
 		});
+
+		await this.setMetadata({ playable: true });
+		// updateLobby(this);
 	}
 
-	onJoin(client: Client, options: IGameRoomJoinOptions) {
+	async onJoin(client: Client, options: IGameRoomJoinOptions) {
 		const playerId = this.state.players.size;
 		if (playerId === NUM_PLAYERS) {
+			// joining as spectator
+			const playerIds = Array.from(this.state.players.keys());
+			const numSpectators = this.clients.filter((c) => !playerIds.includes(c.sessionId)).length;
+			await this.setMetadata({ numSpectators });
+			// todo update on leaving dont feel like doing rn
 			return;
 		}
+
 		this.state.players.set(client.sessionId, new Player(playerId, options.name));
 
 		if (this.state.players.size === NUM_PLAYERS) {
@@ -44,6 +53,8 @@ export class GameRoom extends Room<GameState> {
 					this.startEndGameTimer(key);
 				}
 			});
+			await this.setMetadata({ playable: false });
+			updateLobby(this);
 		}
 	}
 

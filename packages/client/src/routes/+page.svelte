@@ -28,11 +28,14 @@
 	onDestroy(async () => {
 		await leaveLobby();
 	});
+
+	$: joinableGames = $lobbyRooms.filter((r) => r.metadata.playable);
+	$: spectatableGames = $lobbyRooms.filter((r) => !r.metadata.playable);
 </script>
 
 <TabGroup justify="justify-center">
-	<Tab bind:group={tabSet} name="joinTab" value={0}>Join</Tab>
-	<Tab bind:group={tabSet} name="spectateTab" value={1}>Spectate</Tab>
+	<Tab bind:group={tabSet} name="joinTab" value={0}>Join ({joinableGames.length})</Tab>
+	<Tab bind:group={tabSet} name="spectateTab" value={1}>Spectate ({spectatableGames.length})</Tab>
 
 	<svelte:fragment slot="panel">
 		<div class="table-container mb-3">
@@ -45,7 +48,7 @@
 				</thead>
 				<tbody>
 					{#if tabSet === 0}
-						{#each $lobbyRooms.filter((r) => r.clients < NUM_PLAYERS) as room}
+						{#each joinableGames as room}
 							<tr class="cursor-pointer" on:click={() => join(room.roomId)}>
 								<td>{room.roomId}</td>
 								<td>...</td>
@@ -56,7 +59,7 @@
 							</tr>
 						{/each}
 					{:else}
-						{#each $lobbyRooms.filter((r) => r.clients >= NUM_PLAYERS) as room}
+						{#each spectatableGames as room}
 							<tr class="cursor-pointer" on:click={() => join(room.roomId)}>
 								<td>{room.roomId}</td>
 								<td>...</td>

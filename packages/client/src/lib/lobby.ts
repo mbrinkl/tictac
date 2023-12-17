@@ -2,7 +2,7 @@ import type { RoomAvailable, Client, Room } from 'colyseus.js';
 import { readonly, writable } from 'svelte/store';
 import { LOBBY_ROOM, type IGameState } from '@tictac/shared';
 
-const store = writable<RoomAvailable<IGameState>[]>([]);
+const store = writable<RoomAvailable[]>([]);
 let lobby: Room<IGameState> | null;
 
 export const joinLobby = async (client: Client) => {
