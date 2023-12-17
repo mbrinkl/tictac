@@ -79,13 +79,6 @@ export class GameRoom extends Room<GameState> {
 		this.startEndGameTimer(nextPlayerId);
 	}
 
-	forfeit(sessionId: string) {
-		if (this.state.status !== GameStatus.InProgress) return;
-		const player = this.state.players.get(sessionId);
-		this.state.status = GameStatus.Forfeited;
-		this.state.winnerId = (player.id + 1) % 2;
-	}
-
 	canMakeMove(sessionId: string): boolean {
 		return (
 			this.state.status === GameStatus.InProgress &&
@@ -95,15 +88,41 @@ export class GameRoom extends Room<GameState> {
 	}
 
 	startEndGameTimer(sessionId: string) {
-		const { timeRemainingMs } = this.state.players.get(sessionId);
+		const player = this.state.players.get(sessionId);
 		this.endGameTimer = this.clock.setTimeout(() => {
-			this.state.players.get(sessionId).timeRemainingMs = 0;
-			this.state.status = GameStatus.TimedOut;
-			this.state.winnerId = this.state.players.get(this.getNextPlayerId(sessionId)).id;
-		}, timeRemainingMs);
+			player.timeRemainingMs = 0;
+			this.endGame(GameStatus.TimedOut, (player.id + 1) % 2);
+		}, player.timeRemainingMs);
 	}
 
 	cancelEndGameTimer() {
 		this.endGameTimer.clear();
+	}
+
+	forfeit(sessionId: string) {
+		const player = this.state.players.get(sessionId);
+		this.endGame(GameStatus.Forfeited, (player.id + 1) % 2);
+	}
+
+	endGame(status: GameStatus, winnerId?: number) {
+		if (this.state.status !== GameStatus.InProgress) return;
+
+		this.cancelEndGameTimer();
+
+		// end game
+		this.state.status = status;
+		if (winnerId !== undefined) this.state.winnerId = winnerId;
+
+		// update active player time remaining
+		this.state.players.forEach((player) => {
+			if (player.id === this.state.activePlayerId) {
+				const start = player.turnStartDate;
+				const now = Date.now();
+				const elapsed = now - start;
+				player.timeRemainingMs -= elapsed;
+			}
+		});
+
+		this.state.activePlayerId = -1;
 	}
 }

@@ -40,14 +40,11 @@ export class ClickCellCommand extends Command<GameRoom, IClickCellCommandArgs> {
 		this.state.board[index] = player.mark;
 
 		if (isVictory(this.state.board, player.mark)) {
-			this.state.status = GameStatus.Finished;
-			this.state.winnerId = player.id;
-			return;
+			return this.room.endGame(GameStatus.Finished, player.id);
 		}
 
 		if (isDraw(this.state.board)) {
-			this.state.status = GameStatus.Finished;
-			return;
+			return this.room.endGame(GameStatus.Finished);
 		}
 
 		this.room.startNextPlayerTurn(sessionId);

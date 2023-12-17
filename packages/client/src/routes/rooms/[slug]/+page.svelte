@@ -98,6 +98,8 @@
 		<div>P{state.winnerId} wins</div>
 	{:else if state.status === GameStatus.TimedOut}
 		<div>P{state.winnerId} wins, timeout</div>
+	{:else if state.status === GameStatus.Forfeited}
+		<div>P{state.winnerId} wins, forfeit</div>
 	{/if}
 
 	<div class="flex justify-center m-3">
