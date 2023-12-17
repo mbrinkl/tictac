@@ -30,3 +30,8 @@ export interface IGameState {
 	status: GameStatus;
 	winnerId: number;
 }
+
+export interface IGameMetadata {
+	playable: boolean;
+	numSpectators: number;
+}

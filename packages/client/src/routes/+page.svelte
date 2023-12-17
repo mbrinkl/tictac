@@ -29,8 +29,8 @@
 		await leaveLobby();
 	});
 
-	$: joinableGames = $lobbyRooms.filter((r) => r.metadata.playable);
-	$: spectatableGames = $lobbyRooms.filter((r) => !r.metadata.playable);
+	$: joinableGames = $lobbyRooms.filter((r) => r.metadata?.playable);
+	$: spectatableGames = $lobbyRooms.filter((r) => !r.metadata?.playable);
 </script>
 
 <TabGroup justify="justify-center">

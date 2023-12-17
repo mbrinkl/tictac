@@ -6,12 +6,13 @@ import {
 	GameStatus,
 	IGameRoomCreateOptions,
 	IGameRoomJoinOptions,
+	IGameMetadata,
 } from '@tictac/shared';
 import { GameState } from './schema/GameState';
 import { Player } from './schema/Player';
 import { ClickCellCommand } from './commands/ClickCellCommand';
 
-export class GameRoom extends Room<GameState> {
+export class GameRoom extends Room<GameState, IGameMetadata> {
 	endGameTimer: Delayed;
 	dispatcher = new Dispatcher(this);
 
@@ -29,7 +30,6 @@ export class GameRoom extends Room<GameState> {
 		});
 
 		await this.setMetadata({ playable: true });
-		// updateLobby(this);
 	}
 
 	async onJoin(client: Client, options: IGameRoomJoinOptions) {
