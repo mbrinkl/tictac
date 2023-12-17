@@ -21,6 +21,6 @@
 
 <Toast />
 
-<div class="container mx-auto py-3 h-screen">
+<div class="container mx-auto px-4 py-3 h-screen">
 	<slot />
 </div>
