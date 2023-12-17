@@ -14,7 +14,7 @@
 	} from '@tictac/shared';
 	import PlayerInfo from './PlayerInfo.svelte';
 	import { getClient } from '$lib/util';
-	import { reconnectionStore } from '$lib/gameStore';
+	import { reconnectionStore, playerNameStore } from '$lib/gameStore';
 	import { onDestroy, onMount } from 'svelte';
 	import { getToastStore, type ToastSettings } from '@skeletonlabs/skeleton';
 	import { goto } from '$app/navigation';
@@ -33,14 +33,18 @@
 
 	const join = async () => {
 		try {
+			if (!$playerNameStore) {
+				return;
+			}
+
 			if (data.slug === 'create') {
-				const opts: IGameRoomCreateOptions = { isPrivate: data.isPrivate, name: 'Jake' };
+				const opts: IGameRoomCreateOptions = { isPrivate: data.isPrivate, name: $playerNameStore };
 				gameRoom = await client.create<IGameState>('game', opts);
 				goto(`/rooms/${gameRoom.id}`, { replaceState: true });
 			} else if ($reconnectionStore?.roomId === data.slug) {
 				gameRoom = await client.reconnect($reconnectionStore.token);
 			} else {
-				const opts: IGameRoomJoinOptions = { name: 'Noob' };
+				const opts: IGameRoomJoinOptions = { name: $playerNameStore };
 				gameRoom = await client.joinById(data.slug, opts);
 			}
 			$reconnectionStore = { roomId: gameRoom.id, token: gameRoom.reconnectionToken };
@@ -50,6 +54,16 @@
 			});
 		} catch (error) {
 			err = error;
+		}
+	};
+
+	const setName = async (e: SubmitEvent) => {
+		// double click possibility of double join? idk check later
+		const formData = new FormData(e.target as HTMLFormElement);
+		const nickname = formData.get('nickname') as string | null;
+		if (nickname) {
+			$playerNameStore = nickname;
+			await join();
 		}
 	};
 
@@ -71,6 +85,11 @@
 
 {#if err}
 	<div>{err}</div>
+{:else if !$playerNameStore}
+	<form method="post" on:submit|preventDefault={setName}>
+		<input id="nickname" name="nickname" placeholder="Nickname" class="input" />
+		<button type="submit" class="btn variant-ghost-primary">Submit</button>
+	</form>
 {:else if !gameRoom || !state || state.players.size !== 2}
 	<div class="h-full flex flex-col justify-center items-center gap-3">
 		<div class="flex gap-3">
