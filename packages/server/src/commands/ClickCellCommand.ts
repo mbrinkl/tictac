@@ -29,13 +29,11 @@ export class ClickCellCommand extends Command<GameRoom, IClickCellCommandArgs> {
 	execute({ sessionId, index }: IClickCellCommandArgs) {
 		if (!this.room.canMakeMove(sessionId) || !isValidMove(index, this.state.board)) return;
 
-		this.room.cancelEndGameTimer();
+		this.room.clearEndGameTimer();
+
 		const player = this.state.players.get(sessionId);
 
-		const start = player.turnStartDate;
-		const now = Date.now();
-		const elapsed = now - start;
-		player.timeRemainingMs -= elapsed;
+		this.room.updateTimeRemaining(player);
 
 		this.state.board[index] = player.mark;
 

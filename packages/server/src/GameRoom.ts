@@ -7,6 +7,7 @@ import {
 	IGameRoomCreateOptions,
 	IGameRoomJoinOptions,
 	IGameMetadata,
+	IPlayer,
 } from '@tictac/shared';
 import { GameState } from './schema/GameState';
 import { Player } from './schema/Player';
@@ -47,10 +48,10 @@ export class GameRoom extends Room<GameState, IGameMetadata> {
 
 		if (this.state.players.size === NUM_PLAYERS) {
 			this.state.status = GameStatus.InProgress;
-			this.state.players.forEach((player, key) => {
+			this.state.players.forEach((player) => {
 				if (player.id === 0) {
 					player.turnStartDate = Date.now();
-					this.startEndGameTimer(key);
+					this.startEndGameTimer(player);
 				}
 			});
 			await this.setMetadata({ playable: false });
@@ -59,21 +60,19 @@ export class GameRoom extends Room<GameState, IGameMetadata> {
 	}
 
 	async onLeave(client: Client, consented: boolean) {
-		// handle spectators
 		if (!this.state.players.has(client.sessionId)) return;
 
-		this.state.players.get(client.sessionId).isConnected = false;
-
-		if (consented) {
-			this.forfeit(client.sessionId);
-			return;
-		}
+		const player = this.state.players.get(client.sessionId);
+		player.isConnected = false;
 
 		try {
-			await this.allowReconnection(client, 20);
-			this.state.players.get(client.sessionId).isConnected = true;
-		} catch (e) {
-			this.forfeit(client.sessionId);
+			if (consented) {
+				throw new Error('Consented Leave');
+			}
+			await this.allowReconnection(client, 10);
+			player.isConnected = true;
+		} catch {
+			this.forfeit(player);
 		}
 	}
 
@@ -87,7 +86,7 @@ export class GameRoom extends Room<GameState, IGameMetadata> {
 		const nextPlayer = this.state.players.get(nextPlayerId);
 		this.state.activePlayerId = nextPlayer.id;
 		nextPlayer.turnStartDate = Date.now();
-		this.startEndGameTimer(nextPlayerId);
+		this.startEndGameTimer(nextPlayer);
 	}
 
 	canMakeMove(sessionId: string): boolean {
@@ -98,27 +97,25 @@ export class GameRoom extends Room<GameState, IGameMetadata> {
 		);
 	}
 
-	startEndGameTimer(sessionId: string) {
-		const player = this.state.players.get(sessionId);
+	startEndGameTimer(player: IPlayer) {
 		this.endGameTimer = this.clock.setTimeout(() => {
 			player.timeRemainingMs = 0;
 			this.endGame(GameStatus.TimedOut, (player.id + 1) % 2);
 		}, player.timeRemainingMs);
 	}
 
-	cancelEndGameTimer() {
+	clearEndGameTimer() {
 		this.endGameTimer.clear();
 	}
 
-	forfeit(sessionId: string) {
-		const player = this.state.players.get(sessionId);
+	forfeit(player: IPlayer) {
 		this.endGame(GameStatus.Forfeited, (player.id + 1) % 2);
 	}
 
 	endGame(status: GameStatus, winnerId?: number) {
 		if (this.state.status !== GameStatus.InProgress) return;
 
-		this.cancelEndGameTimer();
+		this.clearEndGameTimer();
 
 		// end game
 		this.state.status = status;
@@ -127,13 +124,17 @@ export class GameRoom extends Room<GameState, IGameMetadata> {
 		// update active player time remaining
 		this.state.players.forEach((player) => {
 			if (player.id === this.state.activePlayerId) {
-				const start = player.turnStartDate;
-				const now = Date.now();
-				const elapsed = now - start;
-				player.timeRemainingMs -= elapsed;
+				this.updateTimeRemaining(player);
 			}
 		});
 
 		this.state.activePlayerId = -1;
+	}
+
+	updateTimeRemaining(player: IPlayer) {
+		const start = player.turnStartDate;
+		const now = Date.now();
+		const elapsed = now - start;
+		player.timeRemainingMs -= elapsed;
 	}
 }
