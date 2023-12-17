@@ -1,11 +1,8 @@
 <script lang="ts">
 	export let data: { slug: string; isPrivate: boolean };
 
-	import clsx from 'clsx';
 	import type { Room } from 'colyseus.js';
-	import { ProgressRadial, clipboard } from '@skeletonlabs/skeleton';
 	import {
-		isValidMove,
 		type IGameState,
 		GameStatus,
 		type IGameRoomCreateOptions,
@@ -14,37 +11,33 @@
 	} from '@tictac/shared';
 	import PlayerInfo from './PlayerInfo.svelte';
 	import { getClient } from '$lib/util';
-	import { reconnectionStore, playerNameStore } from '$lib/gameStore';
+	import { reconnectionStore, playerName } from '$lib/gameStore';
 	import { onDestroy, onMount } from 'svelte';
-	import { getToastStore, type ToastSettings } from '@skeletonlabs/skeleton';
 	import { goto } from '$app/navigation';
+	import UpdateNickname from '$lib/components/UpdateNickname.svelte';
+	import WaitingForPlayer from './WaitingForPlayer.svelte';
+	import Board from './Board.svelte';
 
 	let gameRoom: Room<IGameState> | null = null;
 	let state: IGameState | null = null;
 	let err: any;
 
-	const toastStore = getToastStore();
 	const client = getClient();
-
-	const t: ToastSettings = {
-		message: 'URL copied to clipboard',
-		background: 'variant-filled-primary',
-	};
 
 	const join = async () => {
 		try {
-			if (!$playerNameStore) {
+			if (!$playerName) {
 				return;
 			}
 
 			if (data.slug === 'create') {
-				const opts: IGameRoomCreateOptions = { isPrivate: data.isPrivate, name: $playerNameStore };
+				const opts: IGameRoomCreateOptions = { isPrivate: data.isPrivate, name: $playerName };
 				gameRoom = await client.create<IGameState>('game', opts);
 				goto(`/rooms/${gameRoom.id}`, { replaceState: true });
 			} else if ($reconnectionStore?.roomId === data.slug) {
 				gameRoom = await client.reconnect($reconnectionStore.token);
 			} else {
-				const opts: IGameRoomJoinOptions = { name: $playerNameStore };
+				const opts: IGameRoomJoinOptions = { name: $playerName };
 				gameRoom = await client.joinById(data.slug, opts);
 			}
 			$reconnectionStore = { roomId: gameRoom.id, token: gameRoom.reconnectionToken };
@@ -54,16 +47,6 @@
 			});
 		} catch (error) {
 			err = error;
-		}
-	};
-
-	const setName = async (e: SubmitEvent) => {
-		// double click possibility of double join? idk check later
-		const formData = new FormData(e.target as HTMLFormElement);
-		const nickname = formData.get('nickname') as string | null;
-		if (nickname) {
-			$playerNameStore = nickname;
-			await join();
 		}
 	};
 
@@ -85,30 +68,12 @@
 
 {#if err}
 	<div>{err}</div>
-{:else if !$playerNameStore}
-	<form method="post" on:submit|preventDefault={setName}>
-		<input id="nickname" name="nickname" placeholder="Nickname" class="input" />
-		<button type="submit" class="btn variant-ghost-primary">Submit</button>
-	</form>
+{:else if !$playerName}
+	<UpdateNickname onSubmit={join} />
 {:else if !gameRoom || !state || state.players.size !== 2}
-	<div class="h-full flex flex-col justify-center items-center gap-3">
-		<div class="flex gap-3">
-			<div>Waiting for another player...</div>
-			<ProgressRadial width="w-6" meter="stroke-primary-500" track="stroke-primary-500/30" strokeLinecap="butt" />
-		</div>
-		{#if gameRoom}
-			<button
-				class="btn variant-ghost-primary"
-				use:clipboard={window.location.origin + `/rooms/${gameRoom?.id}`}
-				on:click={() => toastStore.trigger(t)}
-			>
-				Invite
-			</button>
-		{/if}
-	</div>
+	<WaitingForPlayer {gameRoom} />
 {:else}
 	{@const player = state.players.get(gameRoom.sessionId)}
-	{@const [p1, p2] = Array.from(state.players.values())}
 	{@const isActive = state.activePlayerId === player?.id}
 
 	{#if state.status === GameStatus.Finished && state.winnerId === -1}
@@ -122,44 +87,16 @@
 	{/if}
 
 	<div class="flex justify-center m-3">
-		<div class="board bg-gray-500">
-			{#each state.board as value, index}
-				{@const clickable = isActive && isValidMove(index, state.board)}
-				<div
-					class={clsx(
-						'bg-gray-300 flex items-center justify-center',
-						clickable && 'cursor-pointer hover:bg-primary-300',
-					)}
-					role={clickable ? 'button' : 'none'}
-					on:click={() => onCellClick(index)}
-				>
-					<span class="text-xl text-primary-500 font-bold">{value}</span>
-				</div>
-			{/each}
-		</div>
+		<Board board={state.board} {isActive} {onCellClick} />
 	</div>
 	<div class="flex justify-between">
-		<PlayerInfo
-			player={p1}
-			isClient={player?.id === p1.id}
-			isActive={state.activePlayerId === p1.id}
-			gameStatus={state.status}
-		/>
-		<PlayerInfo
-			player={p2}
-			isClient={player?.id === p2.id}
-			isActive={state.activePlayerId === p2.id}
-			gameStatus={state.status}
-		/>
+		{#each Array.from(state.players.values()) as p}
+			<PlayerInfo
+				player={p}
+				isClient={player?.id === p.id}
+				isActive={state.activePlayerId === p.id}
+				gameStatus={state.status}
+			/>
+		{/each}
 	</div>
 {/if}
-
-<style>
-	.board {
-		display: grid;
-		grid-gap: 4px;
-		grid-template-columns: repeat(3, 1fr);
-		grid-auto-rows: minmax(100px, auto);
-		width: 300px;
-	}
-</style>
