@@ -1,5 +1,5 @@
 import { Dispatcher } from '@colyseus/command';
-import { Client, Room } from 'colyseus';
+import { Client, Delayed, Room } from 'colyseus';
 import {
 	CELL_CLICK_COMMAND,
 	NUM_PLAYERS,
@@ -12,6 +12,7 @@ import { Player } from './schema/Player';
 import { ClickCellCommand } from './commands/ClickCellCommand';
 
 export class GameRoom extends Room<GameState> {
+	endGameTimer: Delayed;
 	dispatcher = new Dispatcher(this);
 
 	onCreate(options: IGameRoomCreateOptions) {
@@ -37,7 +38,12 @@ export class GameRoom extends Room<GameState> {
 
 		if (this.state.players.size === NUM_PLAYERS) {
 			this.state.status = GameStatus.InProgress;
-			this.clock.start();
+			this.state.players.forEach((player, key) => {
+				if (player.id === 0) {
+					player.turnStartDate = Date.now();
+					this.startEndGameTimer(key);
+				}
+			});
 		}
 	}
 
@@ -60,6 +66,19 @@ export class GameRoom extends Room<GameState> {
 		}
 	}
 
+	getNextPlayerId(sessionId: string) {
+		const playerIds = Array.from(this.state.players.keys());
+		return playerIds[0] === sessionId ? playerIds[1] : playerIds[0];
+	}
+
+	startNextPlayerTurn(sessionId: string) {
+		const nextPlayerId = this.getNextPlayerId(sessionId);
+		const nextPlayer = this.state.players.get(nextPlayerId);
+		this.state.activePlayerId = nextPlayer.id;
+		nextPlayer.turnStartDate = Date.now();
+		this.startEndGameTimer(nextPlayerId);
+	}
+
 	forfeit(sessionId: string) {
 		if (this.state.status !== GameStatus.InProgress) return;
 		const player = this.state.players.get(sessionId);
@@ -73,5 +92,18 @@ export class GameRoom extends Room<GameState> {
 			this.state.players.has(sessionId) &&
 			this.state.players.get(sessionId).id === this.state.activePlayerId
 		);
+	}
+
+	startEndGameTimer(sessionId: string) {
+		const { timeRemainingMs } = this.state.players.get(sessionId);
+		this.endGameTimer = this.clock.setTimeout(() => {
+			this.state.players.get(sessionId).timeRemainingMs = 0;
+			this.state.status = GameStatus.TimedOut;
+			this.state.winnerId = this.state.players.get(this.getNextPlayerId(sessionId)).id;
+		}, timeRemainingMs);
+	}
+
+	cancelEndGameTimer() {
+		this.endGameTimer.clear();
 	}
 }

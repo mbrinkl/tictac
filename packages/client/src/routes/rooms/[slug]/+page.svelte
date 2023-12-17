@@ -96,6 +96,8 @@
 		<div>Draw</div>
 	{:else if state.status === GameStatus.Finished}
 		<div>P{state.winnerId} wins</div>
+	{:else if state.status === GameStatus.TimedOut}
+		<div>P{state.winnerId} wins, timeout</div>
 	{/if}
 
 	<div class="flex justify-center m-3">
@@ -116,8 +118,18 @@
 		</div>
 	</div>
 	<div class="flex justify-between">
-		<PlayerInfo player={p1} isClient={player?.id === p1.id} isActive={state.activePlayerId === p1.id} />
-		<PlayerInfo player={p2} isClient={player?.id === p2.id} isActive={state.activePlayerId === p2.id} />
+		<PlayerInfo
+			player={p1}
+			isClient={player?.id === p1.id}
+			isActive={state.activePlayerId === p1.id}
+			gameStatus={state.status}
+		/>
+		<PlayerInfo
+			player={p2}
+			isClient={player?.id === p2.id}
+			isActive={state.activePlayerId === p2.id}
+			gameStatus={state.status}
+		/>
 	</div>
 {/if}
 

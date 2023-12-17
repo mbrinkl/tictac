@@ -1,5 +1,5 @@
 import { Command } from '@colyseus/command';
-import { isValidMove, NUM_PLAYERS, GameStatus } from '@tictac/shared';
+import { isValidMove, GameStatus } from '@tictac/shared';
 import { GameRoom } from '../GameRoom';
 
 const winConditions = [
@@ -18,6 +18,8 @@ const isVictory = (board: string[], playerMark: string): boolean => {
 	return winConditions.some((winCondition) => winCondition.every((index) => indices.includes(index)));
 };
 
+const isDraw = (board: string[]) => board.every((cell) => cell !== '');
+
 interface IClickCellCommandArgs {
 	sessionId: string;
 	index: number;
@@ -27,25 +29,27 @@ export class ClickCellCommand extends Command<GameRoom, IClickCellCommandArgs> {
 	execute({ sessionId, index }: IClickCellCommandArgs) {
 		if (!this.room.canMakeMove(sessionId) || !isValidMove(index, this.state.board)) return;
 
+		this.room.cancelEndGameTimer();
 		const player = this.state.players.get(sessionId);
 
-		const { elapsedTime } = this.clock;
-		player.timeRemainingMs -= elapsedTime - this.state.lastElapsed;
-		this.state.lastElapsed = elapsedTime;
+		const start = player.turnStartDate;
+		const now = Date.now();
+		const elapsed = now - start;
+		player.timeRemainingMs -= elapsed;
 
 		this.state.board[index] = player.mark;
 
 		if (isVictory(this.state.board, player.mark)) {
 			this.state.status = GameStatus.Finished;
 			this.state.winnerId = player.id;
-			this.clock.stop();
-			return;
-		} else if (this.state.board.every((cell) => cell !== '')) {
-			this.state.status = GameStatus.Finished;
-			this.clock.stop();
 			return;
 		}
 
-		this.state.activePlayerId = (this.state.activePlayerId + 1) % NUM_PLAYERS;
+		if (isDraw(this.state.board)) {
+			this.state.status = GameStatus.Finished;
+			return;
+		}
+
+		this.room.startNextPlayerTurn(sessionId);
 	}
 }

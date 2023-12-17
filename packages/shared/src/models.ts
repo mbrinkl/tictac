@@ -20,13 +20,13 @@ export interface IPlayer {
 	mark: string;
 	isConnected: boolean;
 	timeRemainingMs: number;
+	turnStartDate: number;
 }
 
 export interface IGameState {
 	players: Map<string, IPlayer>;
 	board: string[];
 	activePlayerId: number;
-	lastElapsed: number;
 	status: GameStatus;
 	winnerId: number;
 }

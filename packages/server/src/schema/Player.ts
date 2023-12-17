@@ -7,6 +7,7 @@ export class Player extends Schema implements IPlayer {
 	@type('string') mark;
 	@type('boolean') isConnected;
 	@type('number') timeRemainingMs;
+	@type('number') turnStartDate;
 
 	constructor(id: number, name: string = 'No Name') {
 		super();
@@ -14,6 +15,7 @@ export class Player extends Schema implements IPlayer {
 		this.name = name;
 		this.mark = id === 0 ? 'X' : 'O';
 		this.isConnected = true;
-		this.timeRemainingMs = 300 * 1000;
+		this.timeRemainingMs = 30 * 1000;
+		this.turnStartDate = 0;
 	}
 }
