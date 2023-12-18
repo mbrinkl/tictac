@@ -33,32 +33,29 @@ export class GameRoom extends Room<GameState, IGameMetadata> {
 
 	async onJoin(client: Client, options: IGameRoomJoinOptions) {
 		const playerId = this.state.players.size;
+
+		// Join as spectator if full
 		if (playerId === NUM_PLAYERS) {
-			// joining as spectator
 			const playerIds = Array.from(this.state.players.keys());
 			const numSpectators = this.clients.filter((c) => !playerIds.includes(c.sessionId)).length;
-			await this.setMetadata({ numSpectators });
+			return await this.setMetadata({ numSpectators });
 			// todo update on leaving dont feel like doing rn
-			return;
 		}
 
-		this.state.players.set(client.sessionId, new Player(playerId, options.name));
+		// Create player and update lobby
+		const playerName = options.name ?? 'NO_NAME';
+		this.state.players.set(client.sessionId, new Player(playerId, playerName));
 		await this.setMetadata({
-			playerNames:
-				this.metadata?.playerNames?.length === 1
-					? [...(this.metadata.playerNames ?? []), options.name ?? 'NO_NAME']
-					: [options.name ?? 'NO_NAME'],
+			playerNames: [...(this.metadata?.playerNames ?? []), playerName],
 		});
 		updateLobby(this);
 
+		// Start the game if full
 		if (this.state.players.size === NUM_PLAYERS) {
 			this.state.status = GameStatus.InProgress;
-			this.state.players.forEach((player) => {
-				if (player.id === 0) {
-					player.turnStartDate = Date.now();
-					this.startEndGameTimer(player);
-				}
-			});
+			const firstPlayer = Array.from(this.state.players.values())[0];
+			firstPlayer.turnStartDate = Date.now();
+			this.startEndGameTimer(firstPlayer);
 		}
 	}
 
@@ -79,25 +76,25 @@ export class GameRoom extends Room<GameState, IGameMetadata> {
 		}
 	}
 
-	getNextPlayerId(sessionId: string) {
-		const playerIds = Array.from(this.state.players.keys());
-		return playerIds[0] === sessionId ? playerIds[1] : playerIds[0];
-	}
-
-	startNextPlayerTurn(sessionId: string) {
-		const nextPlayerId = this.getNextPlayerId(sessionId);
-		const nextPlayer = this.state.players.get(nextPlayerId);
-		this.state.activePlayerId = nextPlayer.id;
-		nextPlayer.turnStartDate = Date.now();
-		this.startEndGameTimer(nextPlayer);
-	}
-
-	canMakeMove(sessionId: string): boolean {
+	isClientActivePlayer(sessionId: string): boolean {
 		return (
 			this.state.status === GameStatus.InProgress &&
 			this.state.players.has(sessionId) &&
 			this.state.players.get(sessionId).id === this.state.activePlayerId
 		);
+	}
+
+	getNextPlayer(sessionId: string): IPlayer {
+		const playerIds = Array.from(this.state.players.keys());
+		const nextPlayerId = playerIds[0] === sessionId ? playerIds[1] : playerIds[0];
+		return this.state.players.get(nextPlayerId);
+	}
+
+	startNextPlayerTurn(sessionId: string) {
+		const nextPlayer = this.getNextPlayer(sessionId);
+		this.state.activePlayerId = nextPlayer.id;
+		nextPlayer.turnStartDate = Date.now();
+		this.startEndGameTimer(nextPlayer);
 	}
 
 	startEndGameTimer(player: IPlayer) {
@@ -109,6 +106,13 @@ export class GameRoom extends Room<GameState, IGameMetadata> {
 
 	clearEndGameTimer() {
 		this.endGameTimer.clear();
+	}
+
+	updateTimeRemaining(player: IPlayer) {
+		const start = player.turnStartDate;
+		const now = Date.now();
+		const elapsed = now - start;
+		player.timeRemainingMs -= elapsed;
 	}
 
 	forfeit(player: IPlayer) {
@@ -132,12 +136,5 @@ export class GameRoom extends Room<GameState, IGameMetadata> {
 		});
 
 		this.state.activePlayerId = -1;
-	}
-
-	updateTimeRemaining(player: IPlayer) {
-		const start = player.turnStartDate;
-		const now = Date.now();
-		const elapsed = now - start;
-		player.timeRemainingMs -= elapsed;
 	}
 }

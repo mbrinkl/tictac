@@ -3,7 +3,6 @@
 	import { joinLobby, leaveLobby, lobbyRooms } from '$lib/lobby';
 	import { getClient } from '$lib/util';
 	import { Tab, TabGroup } from '@skeletonlabs/skeleton';
-	import { NUM_PLAYERS } from '@tictac/shared';
 	import { onDestroy, onMount } from 'svelte';
 
 	const client = getClient();
@@ -50,8 +49,8 @@
 					{#if tabSet === 0}
 						{#each joinableGames as room}
 							<tr class="cursor-pointer" on:click={() => join(room.roomId)}>
-								<td>{room.roomId}</td>
-								<td>...</td>
+								<td>{room.metadata?.playerNames[0]}</td>
+								<td>30s</td>
 							</tr>
 						{:else}
 							<tr>
@@ -61,8 +60,8 @@
 					{:else}
 						{#each spectatableGames as room}
 							<tr class="cursor-pointer" on:click={() => join(room.roomId)}>
-								<td>{room.roomId}</td>
-								<td>...</td>
+								<td>{room.metadata?.playerNames[0]}</td>
+								<td>30s</td>
 							</tr>
 						{:else}
 							<tr>

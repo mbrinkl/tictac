@@ -1,3 +1,3 @@
-export * from './moves';
+export * from './gameLogic';
 export * from './models';
 export * from './config';

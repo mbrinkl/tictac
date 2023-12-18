@@ -9,7 +9,7 @@ export class Player extends Schema implements IPlayer {
 	@type('number') timeRemainingMs;
 	@type('number') turnStartDate;
 
-	constructor(id: number, name: string = 'No Name') {
+	constructor(id: number, name: string) {
 		super();
 		this.id = id;
 		this.name = name;
