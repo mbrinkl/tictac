@@ -32,6 +32,6 @@ export interface IGameState {
 }
 
 export interface IGameMetadata {
-	playable: boolean;
+	playerNames: string[];
 	numSpectators: number;
 }

@@ -29,8 +29,6 @@ export class GameRoom extends Room<GameState, IGameMetadata> {
 				index,
 			});
 		});
-
-		await this.setMetadata({ playable: true });
 	}
 
 	async onJoin(client: Client, options: IGameRoomJoinOptions) {
@@ -45,6 +43,13 @@ export class GameRoom extends Room<GameState, IGameMetadata> {
 		}
 
 		this.state.players.set(client.sessionId, new Player(playerId, options.name));
+		await this.setMetadata({
+			playerNames:
+				this.metadata?.playerNames?.length === 1
+					? [...(this.metadata.playerNames ?? []), options.name ?? 'NO_NAME']
+					: [options.name ?? 'NO_NAME'],
+		});
+		updateLobby(this);
 
 		if (this.state.players.size === NUM_PLAYERS) {
 			this.state.status = GameStatus.InProgress;
@@ -54,8 +59,6 @@ export class GameRoom extends Room<GameState, IGameMetadata> {
 					this.startEndGameTimer(player);
 				}
 			});
-			await this.setMetadata({ playable: false });
-			updateLobby(this);
 		}
 	}
 
