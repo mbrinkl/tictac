@@ -18,6 +18,8 @@
 	import WaitingForPlayer from './WaitingForPlayer.svelte';
 	import Board from './Board.svelte';
 
+	let chatMessages: string[] = [];
+	let chatMessage: string = '';
 	let gameRoom: Room<IGameState> | null = null;
 	let state: IGameState | null = null;
 	let err: any;
@@ -42,8 +44,16 @@
 			}
 			$reconnectionStore = { roomId: gameRoom.id, token: gameRoom.reconnectionToken };
 			state = gameRoom.state;
+
 			gameRoom.onStateChange((newState) => {
 				state = newState;
+			});
+
+			gameRoom.onMessage('*', (type, message) => {
+				if (type === 'chat_message_broadcast') {
+					chatMessages.push(message);
+					chatMessages = chatMessages; // svelte moment
+				}
 			});
 		} catch (error) {
 			err = error;
@@ -52,6 +62,12 @@
 
 	const onCellClick = (index: number) => {
 		gameRoom?.send(CELL_CLICK_COMMAND, index);
+	};
+
+	const sendChatMessage = () => {
+		if (!chatMessage) return;
+		gameRoom?.send('send_chat_message', chatMessage);
+		chatMessage = '';
 	};
 
 	onMount(async () => {
@@ -98,5 +114,21 @@
 				gameStatus={state.status}
 			/>
 		{/each}
+	</div>
+	<div>
+		{#each chatMessages as msg}
+			<div>{msg}</div>
+		{/each}
+		<form on:submit|preventDefault={sendChatMessage}>
+			<input
+				class="input"
+				placeholder="Send a message..."
+				value={chatMessage}
+				on:change={(e) => {
+					chatMessage = e.currentTarget.value;
+				}}
+			/>
+			<button type="submit" class="btn variant-ghost-primary">Send</button>
+		</form>
 	</div>
 {/if}

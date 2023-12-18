@@ -29,6 +29,11 @@ export class GameRoom extends Room<GameState, IGameMetadata> {
 				index,
 			});
 		});
+
+		this.onMessage('send_chat_message', (client, message: string) => {
+			const player = this.state.players.get(client.sessionId);
+			this.broadcast('chat_message_broadcast', `${player.name}: ${message}`);
+		});
 	}
 
 	async onJoin(client: Client, options: IGameRoomJoinOptions) {
